@@ -3,7 +3,6 @@ package application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -512,7 +511,7 @@ public class MainController implements Initializable
 			for (AttrAndValue attr:attrsMapEntry)
 			{
 				Number y = Integer.parseInt(attr.v);
-				if (name.contains("Speed"))
+				if (name.contains("Speed")) //TODO: input .xml
 				{
 					y=Integer.parseInt(attr.v)/1000;
 				}
@@ -567,7 +566,7 @@ public class MainController implements Initializable
 		List<TreeItem <CATRow>> list =  new ArrayList<>();
 
 		csv.measValMap.forEach((pos,vars)->{
-			CATRow row = new CATRow (vars, new CheckBox(), new ComboBox<>());
+			CATRow row = new CATRow (vars, new CheckBox(), new ComboBox<>());//TODO: combobox
 			//row = new CATRow (vars);
 			list.add(new TreeItem<CATRow>(row));
 			//Logger.log(LogEnum.DEBUG,vars);
