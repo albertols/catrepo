@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?scenebuilder-stylesheet style.css?>
 
 <!--styleClass="desktop"-->
 
-<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <content>
       <TabPane prefHeight="938.0" prefWidth="1488.0" styleClass="desktop" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -50,11 +61,13 @@
                               </LineChart>
                               <BorderPane fx:id="borderPaneBigChart" layoutX="14.0" layoutY="90.0" prefHeight="532.0" prefWidth="1041.0" />
                               <Slider fx:id="startSlider" layoutX="69.0" layoutY="25.0" prefHeight="14.0" prefWidth="530.0" />
-                              <TextField fx:id="startTextField" layoutX="612.0" layoutY="23.0" prefHeight="25.0" prefWidth="176.0" text="null" />
+                              <TextField fx:id="startTextField" layoutX="612.0" layoutY="23.0" prefHeight="25.0" prefWidth="145" styleClass="mid1-textField" text="null" />
                               <Label layoutX="21.0" layoutY="21.0" prefHeight="21.0" prefWidth="33.0" styleClass="bold-label" text="Start" />
                               <Label layoutX="21.0" layoutY="52.0" prefHeight="21.0" prefWidth="32.0" styleClass="bold-label" text="End" />
-                              <TextField fx:id="endTextField" layoutX="612.0" layoutY="56.0" prefHeight="25.0" prefWidth="176.0" text="null" />
+                              <TextField fx:id="endTextField" layoutX="612.0" layoutY="56.0" prefHeight="25.0" prefWidth="145" styleClass="mid1-textField" text="null" />
                               <Slider fx:id="endSlider" layoutX="69.0" layoutY="58.0" prefHeight="14.0" prefWidth="530.0" />
+                              <TextField fx:id="startCountField" layoutX="771.0" layoutY="23.0" prefHeight="28.0" prefWidth="65.0" styleClass="mid0-bold-textField" />
+                              <TextField fx:id="endCountField" layoutX="771.0" layoutY="56.0" prefHeight="28.0" prefWidth="65.0" styleClass="mid0-bold-textField" />
                            </children>
                         </AnchorPane>
                     </items>

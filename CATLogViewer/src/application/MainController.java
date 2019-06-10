@@ -7,40 +7,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Map.Entry;
-
 import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrAndValue;
 import com.parser.utils.csv.AttrsAndValue;
-import com.parser.utils.csv.CSVConfig;
 import com.parser.utils.csv.InputCSV;
-import com.sun.xml.internal.ws.client.ClientSchemaValidationTube;
-
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -51,15 +36,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.CheckBoxTreeTableCell;
-import javafx.scene.control.cell.ComboBoxTreeTableCell;
-import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.util.Callback;
-import javafx.util.converter.IntegerStringConverter;
 
 public class MainController implements Initializable
 {
@@ -78,15 +57,21 @@ public class MainController implements Initializable
 
 	@FXML
 	public TextArea log_TextArea;
-
+	
+	@FXML
+	public TextField samplesTextField;
+	
 	@FXML
 	public TextField startTextField;
 	
 	@FXML
-	public TextField samplesTextField;
-
-	@FXML
 	public TextField endTextField;
+	
+	@FXML
+	public TextField startCountField;
+	
+	@FXML
+	public TextField endCountField;
 	
 	@FXML
 	public TextField sampleTimeTextField;
@@ -121,21 +106,16 @@ public class MainController implements Initializable
 
 	}
 	
-	Calendar startSimTime;
-	Calendar endSimTime;
+	private Calendar startSimTime;
+	private Calendar endSimTime;
 
 	private void initSliders()
 	{
 		if (initTimestampFields ())
 		{
 			// max and min
-			Iterator<Integer> iter = csv.calMap.keySet().iterator();
-			Integer min = iter.next();
-			Integer max = min;
-			while (iter.hasNext())
-			{
-				max = iter.next();
-			}
+			Integer min = 0;
+			Integer max = csv.calMap.size()-1;
 			
 			// start
 			startSlider.setMin(min);
@@ -158,17 +138,18 @@ public class MainController implements Initializable
 			endSlider.setBlockIncrement(10);
 			
 			// listeners
+			// sliders
 			startSlider.valueProperty().addListener(new ChangeListener<Number>() {
 				public void changed(ObservableValue<? extends Number> ov,
 						Number oldVal, Number newVal) {
 					int val = newVal.intValue();
-					startTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7)
-							+ "("+Integer.toString(val)+")");
+					startTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+					startCountField.setText(Integer.toString(val));
 					if (startSlider.getValue()>endSlider.getValue())
 					{
 						new GuiAlert(AlertType.ERROR, "Info CATLogViewer", "Error " + startSlider.getId(),
-								startSlider.getId() + " value ("+startSlider.getValue()+") annot be greater than "+ endSlider.getId()
-								+ " value ("+endSlider.getValue()+")");
+								startSlider.getId() + " value="+(int)startSlider.getValue()+" cannot be greater than "+ endSlider.getId()
+								+ " value="+(int)endSlider.getValue()+"");
 						endSlider.setValue(startSlider.getValue()+1);
 						startSlider.setValue(endSlider.getValue()-1);
 					}
@@ -180,22 +161,52 @@ public class MainController implements Initializable
 				public void changed(ObservableValue<? extends Number> ov,
 						Number oldVal, Number newVal) {
 					int val = newVal.intValue();
-					endTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7)
-							+ "("+Integer.toString(val)+")");
+					endTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+					endCountField.setText(Integer.toString(val));
 					if (endSlider.getValue()<startSlider.getValue())
 					{
 						new GuiAlert(AlertType.ERROR, "Info CATLogViewer", "Error " + endSlider.getId(),
-								endSlider.getId() + " value ("+endSlider.getValue()+") cannot be less than "+ startSlider.getId()
-								+ " value ("+startSlider.getValue()+")");
+								endSlider.getId() + " value="+(int)endSlider.getValue()+" cannot be less than "+ startSlider.getId()
+								+ " value="+(int)startSlider.getValue()+"");
 						endSlider.setValue(startSlider.getValue()+1);
 						startSlider.setValue(endSlider.getValue()-1);
 					}
 					simTimeChecker ();
 				}
 			});
+					
+			// TextField counters
+			startCountField.textProperty().addListener((observable, oldValue, newValue)->{
+				try
+				{
+					int i = Integer.parseInt(StringUtils.onlyNum(newValue.trim()));
+					if (csv.calMap.containsKey(i) && i<Integer.parseInt(StringUtils.onlyNum(endCountField.getText().trim())))
+					{
+						startSlider.setValue(i);
+					}
+				}
+				catch (Exception e)
+				{
+					// nothing to do
+				}
+			});
+			endCountField.textProperty().addListener((observable, oldValue, newValue)->{
+				try
+				{
+					int i = Integer.parseInt(StringUtils.onlyNum(newValue.trim()));
+					if (csv.calMap.containsKey(i) && i>Integer.parseInt(StringUtils.onlyNum(startCountField.getText().trim())))
+					{
+						endSlider.setValue(i);
+					}
+				}
+				catch (Exception e)
+				{
+					// nothing to do
+				}
+			});
 			
 			// samples
-			samplesTextField.setText(Integer.toString(max));
+			samplesTextField.setText(Integer.toString(max+1));
 		}
 	}
 	
@@ -406,11 +417,15 @@ public class MainController implements Initializable
 		{
 			endSimTime = csv.endCal;
 			endTextField.setText(StringUtils.calendarToString(endSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			endCountField.setText(Integer.toString(csv.calMap.size()-1));
+			endCountField.setMinHeight(endTextField.getMaxHeight());
 		}
 		if (null!=csv.startCal)
 		{
 			startSimTime = csv.startCal;
 			startTextField.setText(StringUtils.calendarToString(startSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			startCountField.setText("0");
+			startCountField.setMinHeight(startTextField.getMaxHeight());
 		}
 		
 		if (null!=endSimTime && null !=startSimTime)

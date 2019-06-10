@@ -64,3 +64,14 @@
   -fx-background-color: transparent;
   -fx-padding: 0;
 }
+
+.mid1-textField {
+  /*-fx-font-weight: bold;*/
+  -fx-font-size: 14;
+}
+
+.mid0-bold-textField {
+  -fx-font-weight: bold;
+  -fx-font-size: 11;
+  -fx-alignment: center;
+}
