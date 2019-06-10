@@ -1,0 +1,66 @@
+#rootTab{
+    /*fx-background-image: url("mdc_background.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 1014 791;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);*/
+    
+}
+
+.edges { 
+  -fx-background-color: #7b818c;
+  -fx-padding: 3;
+}
+
+.edges2 { 
+  -fx-background-color: #b55151;
+  -fx-padding: 3;
+}
+
+.mainTabTrans{
+	-fx-background-color: rgba(0, 100, 100, 0.1);
+	-fx-background-radius: 10;
+}
+
+
+.desktop{
+	-fx-background-image: url("mdc_background.png");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 1014 791;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, #b55151, 5, 0.1, 0, 0);
+    
+}
+
+.transparent{
+	-fx-background-color: transparent;
+    /*-fx-control-inner-background: transparent;*/
+    -fx-padding: 0;
+}
+
+.transparent2{
+	-fx-background: #FFFFFF;
+   -fx-border-color: #FFFFFF;
+}
+ 
+
+.scrollpane-transparent{
+	-fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-padding: 0;
+}
+
+
+#selected-fruit-frame {
+  -fx-border-color: burlywood;
+  -fx-border-width: 5;
+  -fx-background-color: white;
+}
+
+.bold-label {
+  -fx-font-weight: bold;
+  -fx-side: 15;
+  -fx-border-color: transparent;
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
