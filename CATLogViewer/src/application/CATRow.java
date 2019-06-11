@@ -4,6 +4,7 @@ import com.parser.utils.csv.AttrsAndValue;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 
@@ -13,7 +14,7 @@ public class CATRow
 	private int pos;
 	private String varName;
 	private CheckBox checkBox;
-	private ComboBox comboBox;
+	private ComboBox<String> comboBox;
 	private boolean isPloted=true;
 	
 	public CATRow(AttrsAndValue attrsAndValue)
@@ -24,27 +25,29 @@ public class CATRow
 		
 	}
 	
-	public CATRow(AttrsAndValue attrsAndValue, CheckBox checkBox, ComboBox comboBox)
+	public CATRow(AttrsAndValue attrsAndValue, CheckBox checkBox, ComboBox<String> cb)
 	{
 		this.attrsAndValue = attrsAndValue;
 		this.pos = attrsAndValue.posName;
 		this.varName = attrsAndValue.varName;
 		this.checkBox = checkBox;
-		//listenerCheckBox ();
-		this.comboBox = comboBox;
+		this.comboBox = cb;
+		initCheckBox ();
 	}
 
-	private void listenerCheckBox()
+	private void initCheckBox()
 	{
-		getCheckBox().selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				getCheckBox().setSelected(!newValue);
-				System.out.println("hello" + varName + "=" + getCheckBox().isSelected());
-			}
-		});
-		
-		
+		if (this.comboBox.getItems().size()>0 && null!=this.comboBox.getItems().get(0))
+		{
+			this.comboBox.setValue(this.comboBox.getItems().get(0));
+		}
+//		getCheckBox().selectedProperty().addListener(new ChangeListener<Boolean>() {
+//			@Override
+//			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//				getCheckBox().setSelected(!newValue);
+//				System.out.println("hello" + varName + "=" + getCheckBox().isSelected());
+//			}
+//		});
 	}
 
 	public AttrsAndValue getAttrsAndValue() {
@@ -63,11 +66,11 @@ public class CATRow
 		this.checkBox = checkBox;
 	}
 
-	public ComboBox getComboBox() {
+	public ComboBox<String> getComboBox() {
 		return comboBox;
 	}
 
-	public void setComboBox(ComboBox comboBox) {
+	public void setComboBox(ComboBox<String> comboBox) {
 		this.comboBox = comboBox;
 	}
 

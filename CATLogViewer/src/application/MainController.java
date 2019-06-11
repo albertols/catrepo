@@ -3,6 +3,7 @@ package application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -14,6 +15,7 @@ import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.InputCSV;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,6 +40,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public class MainController implements Initializable
 {
@@ -86,10 +90,13 @@ public class MainController implements Initializable
 	@FXML
 	private AnchorPane bigChartPane;
 
-	private LineChart<Number, Number> bigChart;
+	private LinkedList<LineChart> chartList;
 
 	@FXML
 	private BorderPane borderPaneBigChart;
+	
+	@FXML
+	private VBox chartsPane;
 
 	private InputCSV csv;
 
@@ -226,12 +233,14 @@ public class MainController implements Initializable
 //		bigyAxis.setTickMarkVisible(false);
 //		bigyAxis.setMinorTickVisible(false);
 	
-		bigChart =  new LineChart<>(bigxAxis, bigyAxis);
-		bigChart.setTitle("RawValue Chart");
-		bigChart.setLegendVisible(true);
-		bigChart.getXAxis().setAutoRanging(true);
-		bigChart.getYAxis().setAutoRanging(true);
-		borderPaneBigChart.setCenter(bigChart);
+		chartList = new LinkedList<LineChart>();
+		chartList.add(new LineChart<>(bigxAxis, bigyAxis));
+		chartList.get(0).setTitle("RawValue Chart");
+		chartList.get(0).setLegendVisible(true);
+		chartList.get(0).getXAxis().setAutoRanging(true);
+		chartList.get(0).getYAxis().setAutoRanging(true);
+		borderPaneBigChart.setCenter(chartList.get(0));
+		//chartsPane.getChildren().add(chartList.get(0));
 	
 	}
 
@@ -451,7 +460,7 @@ public class MainController implements Initializable
 		// plotBtn
 		case "plotBtn":
 			//new GuiAlert(AlertType.INFORMATION, "Info CATLogViewer", "Warning " + component.getId(), "not implemented yet");
-			bigChart.getData().clear();
+			chartList.get(0).getData().clear();
 			plotVars ();
 			break;
 
@@ -465,14 +474,19 @@ public class MainController implements Initializable
 
 	private void plotVars()
 	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nPloting vars: ");
 		varsRoot.getChildren().forEach((catRow)->{
 			CATRow row = catRow.getValue();
+			
 			if (row.getCheckBox().isSelected())
 			{
-				log_TextArea.appendText("\nPloting "+row.getVarName());
+				sb.append(" "+row.getVarName()+",");
 				plotVar(row.getAttrsAndValue());
 			}
+			
 		});
+		log_TextArea.appendText(sb.toString());
 	}
 
 
@@ -524,8 +538,9 @@ public class MainController implements Initializable
 			}
 		}
 
-		bigChart.getData().add(series);
-		bigChart.autosize();
+		// TODO: all charts
+		chartList.get(0).getData().add(series);
+		chartList.get(0).autosize();
 	}
 	
 	private boolean isAttrInDateRange (AttrAndValue attr)
@@ -566,7 +581,7 @@ public class MainController implements Initializable
 		List<TreeItem <CATRow>> list =  new ArrayList<>();
 
 		csv.measValMap.forEach((pos,vars)->{
-			CATRow row = new CATRow (vars, new CheckBox(), new ComboBox<>());//TODO: combobox
+			CATRow row = new CATRow (vars,new CheckBox(),new ComboBox<>(FXCollections.observableArrayList(vars.getTypeList())));
 			//row = new CATRow (vars);
 			list.add(new TreeItem<CATRow>(row));
 			//Logger.log(LogEnum.DEBUG,vars);

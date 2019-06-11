@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -15,7 +16,7 @@ public class AttrsAndValue
 {
 	public int posName;
 	public String varName;
-	public Map<Integer, String> typeAndPos = new HashMap<Integer, String>();
+	public Map<Integer, String> typeAndPos = new TreeMap<Integer, String>();
 	public ArrayList<String> typeList = new ArrayList<>();
 	public List<AttrAndValue> attrs = new ArrayList<AttrAndValue>();
 	public Map<String, List<AttrAndValue>> attrsMap = new HashMap<String, List<AttrAndValue>>();
@@ -97,7 +98,7 @@ public class AttrsAndValue
 	public void setPos(int pos) {
 		this.posName = pos;
 	}
-
+	
 	public Map<Integer, String> getTypeAndPos() {
 		return typeAndPos;
 	}
