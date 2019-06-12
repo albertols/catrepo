@@ -31,6 +31,11 @@ public class InputCSV extends CSVConfig
 	public final static String CSV_PATH_1 = "input\\csv\\VATO_61418_CatRecInitialization_20190520_122631.log.csv";
 	public final static String CSV_PATH_2 = "input\\csv\\VATO_61418_CatRecInitialization_20190520_122730.log.csv";
 	public final static String CSV_PATH_3 = "input\\csv\\VATP_11072_CatRecODOMET_20181016_033422.log.csv";
+	public final static String CSV_PATH_4 = "input/csv/VATO_38159_CatRecInitialization_20190612_103729.log.csv";
+	public final static String CSV_PATH_5 = "input/csv/new/VATO_38159_CatRecNP_20190612_113919.log.csv";
+	public final static String CSV_PATH_6 = "input/csv/new/VATO_38159_CatRecVATPRATP_20190612_112821.log.csv";
+	public final static String CSV_PATH_7 = "input/csv/new/VATP_32257_CatRecVATPRATP_20190612_112822.log.csv";
+	public final static String CSV_PATH_8 = "input/csv/new/VATO_38159_CatRecNP_20190612_035209.log.csv";
 	public final static String DELIMITER = ", ";
 	
 	public Map<Integer, String> measNameMap =  null;

@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale.Category;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
+
 import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.StringUtils;
@@ -32,6 +36,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -40,7 +45,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
 public class MainController implements Initializable
@@ -90,30 +98,33 @@ public class MainController implements Initializable
 	@FXML
 	private AnchorPane bigChartPane;
 
-	private LinkedList<LineChart> chartList;
+	//private LinkedList<LineChart> chartList;
 
 	@FXML
 	private BorderPane borderPaneBigChart;
-	
+	@FXML
+	private GridPane chartsGrid;
 	@FXML
 	private VBox chartsPane;
 
 	private InputCSV csv;
 
+	private Calendar startSimTime;
+	private Calendar endSimTime;
+
+	private Map<String, LineChart> chartMap = new TreeMap<String, LineChart>();
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
 		initCSV ();
-
+	
 		// init UI
 		initSliders ();
 		initPlots ();
 		initTreeItemView ();
-
-	}
 	
-	private Calendar startSimTime;
-	private Calendar endSimTime;
+	}
 
 	private void initSliders()
 	{
@@ -218,30 +229,71 @@ public class MainController implements Initializable
 	
 	private void initPlots ()
 	{
-	
-		NumberAxis bigxAxis = new NumberAxis();
-		bigxAxis.setLabel("Timestamp");
-//		bigxAxis.setAutoRanging(false);
-//		bigxAxis.setTickLabelsVisible(false);
-//		bigxAxis.setTickMarkVisible(false);
-//		bigxAxis.setMinorTickVisible(false);
-	
-		NumberAxis  bigyAxis = new NumberAxis();
-		bigyAxis.setLabel("values");
-//		bigyAxis.setAutoRanging(false);
-//		bigyAxis.setTickLabelsVisible(false);
-//		bigyAxis.setTickMarkVisible(false);
-//		bigyAxis.setMinorTickVisible(false);
-	
-		chartList = new LinkedList<LineChart>();
-		chartList.add(new LineChart<>(bigxAxis, bigyAxis));
-		chartList.get(0).setTitle("RawValue Chart");
-		chartList.get(0).setLegendVisible(true);
-		chartList.get(0).getXAxis().setAutoRanging(true);
-		chartList.get(0).getYAxis().setAutoRanging(true);
-		borderPaneBigChart.setCenter(chartList.get(0));
-		//chartsPane.getChildren().add(chartList.get(0));
-	
+		int x = 0;
+		for (Entry<Integer, String> e: csv.measValMap.get(1).typeAndPos.entrySet())
+		{
+			String type = e.getValue();
+			
+			if (!type.contains("Calc") && type.equals("Raw Value"))
+			{
+				NumberAxis bigxAxis = new NumberAxis();
+				bigxAxis.setLabel("Timestamp");
+			
+				NumberAxis  bigyAxis = new NumberAxis();
+				bigyAxis.setLabel("values");
+
+				LineChart lc = new LineChart<>(bigxAxis, bigyAxis);
+				lc.setTitle(type+" Chart");
+				
+				lc.setLegendVisible(true);
+				lc.getXAxis().setAutoRanging(true);
+				lc.getYAxis().setAutoRanging(true);
+				
+				// constraints
+				RowConstraints row1 = new RowConstraints(532);
+				row1.setVgrow(Priority.ALWAYS);
+				chartsGrid.getRowConstraints().add(x, row1);
+				
+				ColumnConstraints col1 = new ColumnConstraints(1041.0);
+				col1.setHgrow(Priority.ALWAYS);
+				chartsGrid.getColumnConstraints().add(0, col1);
+				chartsGrid.add(lc, 0, x);
+				chartMap.put(type, lc);
+				x++;
+			}
+			else if (type.equals("Enum/Bitmap"))
+			{
+				NumberAxis bigxAxis = new NumberAxis();
+				bigxAxis.setLabel("Timestamp");
+//				bigxAxis.setAutoRanging(false);
+//				bigxAxis.setTickLabelsVisible(false);
+//				bigxAxis.setTickMarkVisible(false);
+//				bigxAxis.setMinorTickVisible(false);
+			
+				CategoryAxis  bigyAxis = new CategoryAxis();
+				bigyAxis.setLabel("values");
+
+				LineChart lc = new LineChart<>(bigxAxis, bigyAxis);
+				lc.setTitle(type+" Chart");
+				
+				lc.setLegendVisible(true);
+				lc.getXAxis().setAutoRanging(true);
+				lc.getYAxis().setAutoRanging(true);
+				
+				
+				RowConstraints row1 = new RowConstraints(300);
+				row1.setVgrow(Priority.ALWAYS);
+				chartsGrid.getRowConstraints().add(x, row1);
+				
+				ColumnConstraints col1 = new ColumnConstraints(1041.0);
+				col1.setHgrow(Priority.ALWAYS);
+				chartsGrid.getColumnConstraints().add(0, col1);
+				chartsGrid.add(lc, 0, x);
+				chartMap.put(type, lc);
+				x++;
+			}
+			
+		}
 	}
 
 	private boolean simTimeChecker ()
@@ -264,10 +316,10 @@ public class MainController implements Initializable
 
 	private void initCSV()
 	{
-		// gets .csv
-		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH);
 		Logger._verboseLogs_DEBUG();
-		csv = new InputCSV(InputCSV.CSV_PATH, InputCSV.HEADER);
+		// gets .csv
+		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_4);
+		csv = new InputCSV(InputCSV.CSV_PATH_8, InputCSV.HEADER);
 		csv.exec();
 		csv.writeMeas();
 		csv.showCalendarMap();
@@ -459,8 +511,10 @@ public class MainController implements Initializable
 
 		// plotBtn
 		case "plotBtn":
-			//new GuiAlert(AlertType.INFORMATION, "Info CATLogViewer", "Warning " + component.getId(), "not implemented yet");
-			chartList.get(0).getData().clear();
+//			chartList.get(0).getData().clear();
+			chartMap.forEach((type, lineChart)->{
+				lineChart.getData().clear();
+			});
 			plotVars ();
 			break;
 
@@ -482,7 +536,7 @@ public class MainController implements Initializable
 			if (row.getCheckBox().isSelected())
 			{
 				sb.append(" "+row.getVarName()+",");
-				plotVar(row.getAttrsAndValue());
+				plotVar(row);
 			}
 			
 		});
@@ -490,57 +544,79 @@ public class MainController implements Initializable
 	}
 
 
-	private void plotVar(AttrsAndValue attrs)
+	private void plotVar(CATRow row)
 	{	
+		AttrsAndValue attrs = row.getAttrsAndValue();
 		//defining a series
-		String name = attrs.getVarName();
-		Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		series.setName(name);
+		String name = attrs.getVarName();	
+		String type = row.getComboBox().getValue();
 
 		List<AttrAndValue> attrsMapEntry = attrs.attrsMap
 				.entrySet()
 				.stream()
-				.filter(e -> e.getKey().equals("Raw Value"))
+				.filter(e -> e.getKey().equals(type))
 				.map(Map.Entry::getValue)
 				.findFirst()
 				.orElse(null);
-//		int x=0;
-//		if (null!=attrsMapEntry && attrsMapEntry.size()>0)
-//		{
-//			for (AttrAndValue attr:attrsMapEntry)
-//			{
-//				//populating the series with data
-//				if(("Raw Value").equals(attr.type) && x%3==0)
-//				{
-//					Number y = Integer.parseInt(attr.v);
-//					if (name.contains("Speed"))y=Integer.parseInt(attr.v)/1000;
-//					series.getData().add(new XYChart.Data<Number, Number>(x, y));
-//				}
-//				x++;
-//			}
-//		}
-		int x=0;
-		if (null!=attrsMapEntry && attrsMapEntry.size()>0)
-		{
-			for (AttrAndValue attr:attrsMapEntry)
-			{
-				Number y = Integer.parseInt(attr.v);
-				if (name.contains("Speed")) //TODO: input .xml
-				{
-					y=Integer.parseInt(attr.v)/1000;
-				}
-				if (isAttrInDateRange(attr))
-				{
-					series.getData().add(new XYChart.Data<Number, Number>(x, y));
-					x++;
-				}
-				
-			}
-		}
 
-		// TODO: all charts
-		chartList.get(0).getData().add(series);
-		chartList.get(0).autosize();
+		// getSeries
+		chartMap.get(type).getData().add(getSeries(type, name, attrsMapEntry));
+		chartMap.get(type).autosize();
+	}
+	
+	private Series getSeries (String type, String name, List<AttrAndValue> attrsMapEntry)
+	{
+		Series<Number, Number> series = new XYChart.Series<Number, Number>();
+		switch (type) {
+		case "Raw Value":
+			int x=0;
+			Series<Number, Number> rawSeries = new XYChart.Series<Number, Number>();
+			rawSeries.setName(name);
+			if (null!=attrsMapEntry && attrsMapEntry.size()>0)
+			{
+				for (AttrAndValue attr:attrsMapEntry)
+				{
+					Number y = Integer.parseInt(attr.v);
+					if (name.contains("Speed")) //TODO: input .xml
+					{
+						y=Integer.parseInt(attr.v)/1000;
+					}
+					if (isAttrInDateRange(attr))
+					{
+						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
+						x++;
+					}
+				}
+			}
+			return rawSeries;
+			// TODO
+		case "Calc Value":
+			break;
+
+		case "Enum/Bitmap":
+			
+			x=0;
+			Series<Number, String> enumSeries = new XYChart.Series<Number, String>();
+			enumSeries.setName(name);
+			if (null!=attrsMapEntry && attrsMapEntry.size()>0)
+			{
+				for (AttrAndValue attr:attrsMapEntry)
+				{
+					String y = attr.v;
+					
+					if (isAttrInDateRange(attr) && y.length()>0)
+					{
+						enumSeries.getData().add(new XYChart.Data<Number, String>(x, y));
+						x++;
+					}
+				}
+			}
+			return enumSeries;
+
+		default:
+			return null;
+		}
+		return series;
 	}
 	
 	private boolean isAttrInDateRange (AttrAndValue attr)
