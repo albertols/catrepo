@@ -85,19 +85,22 @@ public class InputCSV extends CSVConfig
 			if (true/*checkHeader(firstLine)*/)
 			{
 				String line =reader.readLine();
+				String ts = "";
+				String lastTs = "";
 				while (null != line)
 				{
 					String[] fields = line.split(DELIMITER);
 					List<String> row = new ArrayList<>();
 					List<AttrsAndValue> rowValues = new ArrayList<>();
-					String ts = "";
+					
 
 					if (true && fields.length>1/*fields.length==headerSize *//*fieldAssessment (String s)*/)
 					{
 						// Date and Time
-						if (!fields[0].trim().equals(ts))
+						ts = fields[0].trim();
+						if (!lastTs.equals(ts))
 						{
-							ts = fields[0].trim();
+							lastTs=ts;
 							row.add(ts);
 							int count = 0;
 							AttrsAndValue aav = null;
