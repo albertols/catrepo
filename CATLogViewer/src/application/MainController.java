@@ -120,6 +120,35 @@ public class MainController implements Initializable
 	
 	}
 
+	private boolean simTimeChecker ()
+	{
+		int start = (int)startSlider.getValue();
+		int end = (int)endSlider.getValue();
+		updateSimTime (csv.calMap.get(start), csv.calMap.get(end));
+		if (start<end)
+		{
+			//log_TextArea.appendText("Sim Time OK:"+start+"<"+end);
+			return true;
+		}
+		else if (start==0)
+		{
+			log_TextArea.appendText("WRONG Sim Time :"+start+"<"+end+"\n");
+			Logger.log(LogEnum.WARNING,"WRONG Sim Time :"+start+"<"+end);
+		}
+		return false;
+	}
+
+	private void initCSV()
+	{
+		Logger._verboseLogs_DEBUG();
+		// gets .csv
+		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_4);
+		csv = new InputCSV(InputCSV.CSV_PATH_8, InputCSV.HEADER);
+		csv.exec();
+		//csv.writeMeas();
+		//csv.showCalendarMap();
+	}
+
 	private void initSliders()
 	{
 		if (initTimestampFields ())
@@ -221,6 +250,33 @@ public class MainController implements Initializable
 		}
 	}
 	
+	private boolean initTimestampFields()
+	{
+		endSimTime = null;
+		startSimTime=null;
+		if (null!=csv.endCal)
+		{
+			endSimTime = csv.endCal;
+			endTextField.setText(StringUtils.calendarToString(endSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			endCountField.setText(Integer.toString(csv.calMap.size()-1));
+			endCountField.setMinHeight(endTextField.getMaxHeight());
+		}
+		if (null!=csv.startCal)
+		{
+			startSimTime = csv.startCal;
+			startTextField.setText(StringUtils.calendarToString(startSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			startCountField.setText("0");
+			startCountField.setMinHeight(startTextField.getMaxHeight());
+		}
+		
+		if (null!=endSimTime && null !=startSimTime)
+		{
+			sampleTimeTextField.setText(StringUtils.friendlyTimeDiff(startSimTime, endSimTime));
+			return true;
+		}
+		return false;
+	}
+
 	private void initPlots ()
 	{
 		int x = 0;
@@ -239,35 +295,6 @@ public class MainController implements Initializable
 				x++;
 			}
 		}
-	}
-
-	private boolean simTimeChecker ()
-	{
-		int start = (int)startSlider.getValue();
-		int end = (int)endSlider.getValue();
-		updateSimTime (csv.calMap.get(start), csv.calMap.get(end));
-		if (start<end)
-		{
-			//log_TextArea.appendText("Sim Time OK:"+start+"<"+end);
-			return true;
-		}
-		else if (start==0)
-		{
-			log_TextArea.appendText("WRONG Sim Time :"+start+"<"+end+"\n");
-			Logger.log(LogEnum.WARNING,"WRONG Sim Time :"+start+"<"+end);
-		}
-		return false;
-	}
-
-	private void initCSV()
-	{
-		Logger._verboseLogs_DEBUG();
-		// gets .csv
-		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_4);
-		csv = new InputCSV(InputCSV.CSV_PATH_8, InputCSV.HEADER);
-		csv.exec();
-		csv.writeMeas();
-		csv.showCalendarMap();
 	}
 
 	private void initTreeItemView()
@@ -305,33 +332,6 @@ public class MainController implements Initializable
 		varTree.setRoot(varsRoot);
 	}
 
-	private boolean initTimestampFields()
-	{
-		endSimTime = null;
-		startSimTime=null;
-		if (null!=csv.endCal)
-		{
-			endSimTime = csv.endCal;
-			endTextField.setText(StringUtils.calendarToString(endSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
-			endCountField.setText(Integer.toString(csv.calMap.size()-1));
-			endCountField.setMinHeight(endTextField.getMaxHeight());
-		}
-		if (null!=csv.startCal)
-		{
-			startSimTime = csv.startCal;
-			startTextField.setText(StringUtils.calendarToString(startSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
-			startCountField.setText("0");
-			startCountField.setMinHeight(startTextField.getMaxHeight());
-		}
-		
-		if (null!=endSimTime && null !=startSimTime)
-		{
-			sampleTimeTextField.setText(StringUtils.friendlyTimeDiff(startSimTime, endSimTime));
-			return true;
-		}
-		return false;
-	}
-	
 	private void updateSimTime (Calendar start, Calendar end)
 	{
 		this.startSimTime = start;
@@ -500,58 +500,6 @@ public class MainController implements Initializable
 			System.out.print(vars.posName + " ");
 		});
 		return list;
-	}
-
-	/**
-	 * 
-	 * @author alopez
-	 *
-	 */
-	public class CheckboxCellFactory extends TreeTableCell<CATRow, Boolean>
-	{
-		private CheckBox checkBox;
-
-		public CheckboxCellFactory()
-		{
-			checkBox = new CheckBox();
-			checkBox.setSelected(false);
-			checkBox.setOnAction(new EventHandler<ActionEvent>()
-			{
-				//	            @Override
-				//	            public void handle(ActionEvent event)
-				//	            {
-				//	                Logger.log(LogEnum.DEBUG,"clicked: "+checkBox.isSelected());
-				//	                //---I called this here to save changes into the cell after clicking on the CheckBox
-				//	                commitEdit(checkBox.isSelected());
-				//	            }
-
-				@Override
-				public void handle(ActionEvent event) {
-					boolean c = checkBox.isSelected();
-					TreeTableRow<CATRow> tree = getTreeTableRow();
-					CATRow row = tree.getItem();
-					row.setCheckBox(checkBox);
-					commitEdit(checkBox.isSelected());
-					Logger.log(LogEnum.DEBUG,"Updated "+row.getVarName() + "="+row.getCheckBox().isSelected());
-					Logger.log(LogEnum.DEBUG,row.getAttrsAndValue().toString());
-				}
-			});
-		}
-
-		@Override
-		protected void updateItem(Boolean item, boolean empty) {
-			if (empty) {
-				setText(null);
-				setGraphic(null);
-			}else if (null!=item){
-				checkBox.setSelected(item);
-				setText(null);
-				setGraphic(checkBox);
-				//Logger.log(LogEnum.DEBUG,"Updated "+item);
-
-			}
-
-		}
 	}
 
 }

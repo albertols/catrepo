@@ -36,6 +36,8 @@ public class InputCSV extends CSVConfig
 	public final static String CSV_PATH_6 = "input/csv/new/VATO_38159_CatRecVATPRATP_20190612_112821.log.csv";
 	public final static String CSV_PATH_7 = "input/csv/new/VATP_32257_CatRecVATPRATP_20190612_112822.log.csv";
 	public final static String CSV_PATH_8 = "input/csv/new/VATO_38159_CatRecNP_20190612_035209.log.csv";
+	public final static String CSV_PATH_9 = "input/csv/new/VATO_38159_CatRecNP_20190613_115437.log.csv";
+	public final static String CSV_PATH_10 = "input/csv/new/VATO_38159_CatRecNP_20190613_120336.log.csv";
 	public final static String DELIMITER = ", ";
 	
 	public Map<Integer, String> measNameMap =  null;
@@ -55,7 +57,7 @@ public class InputCSV extends CSVConfig
 	public static void main(String[] args)
 	{
 		Logger._verboseLogs_DEBUG();
-		InputCSV i = new InputCSV(CSV_PATH, HEADER);
+		InputCSV i = new InputCSV(CSV_PATH_10, HEADER);
 		i.exec();
 		i.writeMeas();
 	}
@@ -88,49 +90,52 @@ public class InputCSV extends CSVConfig
 					String[] fields = line.split(DELIMITER);
 					List<String> row = new ArrayList<>();
 					List<AttrsAndValue> rowValues = new ArrayList<>();
+					String ts = "";
 
 					if (true && fields.length>1/*fields.length==headerSize *//*fieldAssessment (String s)*/)
 					{
 						// Date and Time
-						String ts = fields[0].trim();
-						row.add(ts);
-						int count = 0;
-						AttrsAndValue aav = null;
-						for (int x=1; x<fields.length /*&& x<MAX_ATTR_SIZE*/; x++)
+						if (!fields[0].trim().equals(ts))
 						{
-							//Logger.log(LogEnum.DEBUG,"*"+fields[x].trim());
-							if (count==3)
+							ts = fields[0].trim();
+							row.add(ts);
+							int count = 0;
+							AttrsAndValue aav = null;
+							for (int x=1; x<fields.length /*&& x<MAX_ATTR_SIZE*/; x++)
 							{
-								count=0;
+								//Logger.log(LogEnum.DEBUG,"*"+fields[x].trim());
+								if (count==3)
+								{
+									count=0;
+									//System.exit(0);
+								}
+								if (this.measValMap.containsKey(x))
+								{
+									aav = measValMap.get(x);
+									
+								}
+								if (null!=aav)
+								{
+									//TODO: magic happens here!
+									aav.newAttr(ts, count, fields[x].trim());
+									count++;
+									
+//									rowValues.add(valAndTs);
+									//row.add(valAndTs.val);
+//									this.measValMap.get(x).add(valAndTs);
+								}
+							}
+							//this.rows.add(row);
+							//fosList.add(new VarPojo(/*row.get(0), Integer.parseInt(row.get(1)), row.get(2))*/));
+							//Logger.log(LogEnum.DEBUG,row.toString());
+							
+							if (fields.length>MAX_ATTR_SIZE)
+							{
+								//Logger.log(LogEnum.WARNING, "MAX_ATTR_SIZE="+(rowValues.size()+1)+"(it should be="+MAX_ATTR_SIZE+")");
+								Logger.log(LogEnum.WARNING, "["+fields.length + "]"+line);
 								//System.exit(0);
 							}
-							if (this.measValMap.containsKey(x))
-							{
-								aav = measValMap.get(x);
-								
-							}
-							if (null!=aav)
-							{
-								//TODO: magic happens here!
-								aav.newAttr(ts, count, fields[x].trim());
-								count++;
-								
-//								rowValues.add(valAndTs);
-								//row.add(valAndTs.val);
-//								this.measValMap.get(x).add(valAndTs);
-							}
 						}
-						this.rows.add(row);
-						fosList.add(new VarPojo(/*row.get(0), Integer.parseInt(row.get(1)), row.get(2))*/));
-						//Logger.log(LogEnum.DEBUG,row.toString());
-						
-						if (fields.length>MAX_ATTR_SIZE)
-						{
-							//Logger.log(LogEnum.WARNING, "MAX_ATTR_SIZE="+(rowValues.size()+1)+"(it should be="+MAX_ATTR_SIZE+")");
-							Logger.log(LogEnum.WARNING, "["+fields.length + "]"+line);
-							//System.exit(0);
-						}
-						
 					}
 					else
 					{
