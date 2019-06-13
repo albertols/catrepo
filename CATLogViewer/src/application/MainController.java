@@ -17,6 +17,9 @@ import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrAndValue;
 import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.InputCSV;
+
+import application.plot.AbstractChart;
+import application.plot.ChartFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -64,9 +67,6 @@ public class MainController implements Initializable
 	public Button clearBtn;
 
 	@FXML
-	public LineChart<?, ?> enumChart;
-
-	@FXML
 	public TextArea log_TextArea;
 	
 	@FXML
@@ -93,25 +93,19 @@ public class MainController implements Initializable
 	@FXML
 	public Slider endSlider;
 
-	public TreeItem <CATRow> varsRoot;
-
 	@FXML
-	private AnchorPane bigChartPane;
-
-	//private LinkedList<LineChart> chartList;
-
-	@FXML
-	private BorderPane borderPaneBigChart;
-	@FXML
-	private GridPane chartsGrid;
-	@FXML
-	private VBox chartsPane;
-
+	public GridPane chartsGrid;
+	
+	private TreeItem <CATRow> varsRoot;
+	
 	private InputCSV csv;
 
 	private Calendar startSimTime;
 	private Calendar endSimTime;
 
+	/**
+	 * Saves Charts by type
+	 */
 	private Map<String, LineChart> chartMap = new TreeMap<String, LineChart>();
 
 	@Override
@@ -233,66 +227,17 @@ public class MainController implements Initializable
 		for (Entry<Integer, String> e: csv.measValMap.get(1).typeAndPos.entrySet())
 		{
 			String type = e.getValue();
+			ChartFactory cf = new ChartFactory();
+			AbstractChart ac = cf.makeChart(type);
 			
-			if (!type.contains("Calc") && type.equals("Raw Value"))
+			if (null!=ac)
 			{
-				NumberAxis bigxAxis = new NumberAxis();
-				bigxAxis.setLabel("Timestamp");
-			
-				NumberAxis  bigyAxis = new NumberAxis();
-				bigyAxis.setLabel("values");
-
-				LineChart lc = new LineChart<>(bigxAxis, bigyAxis);
-				lc.setTitle(type+" Chart");
-				
-				lc.setLegendVisible(true);
-				lc.getXAxis().setAutoRanging(true);
-				lc.getYAxis().setAutoRanging(true);
-				
-				// constraints
-				RowConstraints row1 = new RowConstraints(532);
-				row1.setVgrow(Priority.ALWAYS);
-				chartsGrid.getRowConstraints().add(x, row1);
-				
-				ColumnConstraints col1 = new ColumnConstraints(1041.0);
-				col1.setHgrow(Priority.ALWAYS);
-				chartsGrid.getColumnConstraints().add(0, col1);
-				chartsGrid.add(lc, 0, x);
-				chartMap.put(type, lc);
+				chartsGrid.getRowConstraints().add(x, ac.getRowc());
+				chartsGrid.getColumnConstraints().add(0, ac.getColc());
+				chartsGrid.add(ac.getChart(), 0, x);
+				chartMap.put(type, (LineChart) ac.getChart());
 				x++;
 			}
-			else if (type.equals("Enum/Bitmap"))
-			{
-				NumberAxis bigxAxis = new NumberAxis();
-				bigxAxis.setLabel("Timestamp");
-//				bigxAxis.setAutoRanging(false);
-//				bigxAxis.setTickLabelsVisible(false);
-//				bigxAxis.setTickMarkVisible(false);
-//				bigxAxis.setMinorTickVisible(false);
-			
-				CategoryAxis  bigyAxis = new CategoryAxis();
-				bigyAxis.setLabel("values");
-
-				LineChart lc = new LineChart<>(bigxAxis, bigyAxis);
-				lc.setTitle(type+" Chart");
-				
-				lc.setLegendVisible(true);
-				lc.getXAxis().setAutoRanging(true);
-				lc.getYAxis().setAutoRanging(true);
-				
-				
-				RowConstraints row1 = new RowConstraints(300);
-				row1.setVgrow(Priority.ALWAYS);
-				chartsGrid.getRowConstraints().add(x, row1);
-				
-				ColumnConstraints col1 = new ColumnConstraints(1041.0);
-				col1.setHgrow(Priority.ALWAYS);
-				chartsGrid.getColumnConstraints().add(0, col1);
-				chartsGrid.add(lc, 0, x);
-				chartMap.put(type, lc);
-				x++;
-			}
-			
 		}
 	}
 
@@ -351,115 +296,6 @@ public class MainController implements Initializable
 		TreeTableColumn<CATRow, CheckBox> colCheckBox =  new TreeTableColumn<CATRow, CheckBox>("Plot");
 		colCheckBox.setPrefWidth(58);
 		colCheckBox.setCellValueFactory(new TreeItemPropertyValueFactory<CATRow, CheckBox>("checkBox"));
-		//TreeTableColumn<CATRow, Boolean> colCheckBox =  new TreeTableColumn<CATRow, Boolean>("Plot");
-		//colCheckBox.setCellValueFactory(new TreeItemPropertyValueFactory<CATRow, Boolean>("isPloted"));
-
-		// OPTION 2
-		//		colCheckBox.setCellFactory(new Callback<TreeTableColumn<CATRow,Boolean>, TreeTableCell<CATRow,Boolean>>() {
-		//
-		//            @Override
-		//            public TreeTableCell<CATRow, Boolean> call(TreeTableColumn<CATRow, Boolean> e) {
-		//                return new CheckboxCellFactory();
-		//            }
-		//        });
-
-
-
-		//		// OPTION 1: works but does not editcheckboxes
-		//		colCheckBox.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(colCheckBox));
-		//		colCheckBox.setCellFactory(new Callback<TreeTableColumn<CATRow,Boolean>,TreeTableCell<CATRow,Boolean>>() {
-		//            @Override
-		//            public TreeTableCell<CATRow,Boolean> call( TreeTableColumn<CATRow,Boolean> p ) {
-		//                CheckBoxTreeTableCell<CATRow,Boolean> cell = new CheckBoxTreeTableCell<CATRow,Boolean>();
-		//                cell.setAlignment(Pos.CENTER);
-		//                cell.setDisable(false);
-		//                cell.setEditable(true);
-		//                //cell.forTreeTableColumn(getSelectedProperty)
-		//                //Logger.log(LogEnum.DEBUG,p.get);
-		//                return cell;
-		//            }
-		//        });
-		//
-		//		colCheckBox.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<CATRow,Boolean>, //
-		//				ObservableValue<Boolean>>() {
-		//			@Override
-		//			public ObservableValue<Boolean> call(TreeTableColumn.CellDataFeatures<CATRow,Boolean> param) {
-		//				SimpleBooleanProperty booleanProp = new SimpleBooleanProperty();
-		//				if (null!=param.getValue() && null!=param.getValue().getValue())
-		//				{
-		//					TreeItem<CATRow> treeItem = param.getValue();
-		//					CATRow row = treeItem.getValue();
-		//					booleanProp= new SimpleBooleanProperty(row.isPloted());
-		//
-		//					// Note: singleCol.setOnEditCommit(): Not work for
-		//					// CheckBoxTreeTableCell.
-		//					// When "Single?" column change.
-		//					booleanProp.addListener(new ChangeListener<Boolean>() {
-		//						@Override
-		//						public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-		//								Boolean newValue) {
-		//							row.setPloted(newValue);
-		//							Logger.log(LogEnum.DEBUG,"\trefreshed checkbox for "+row.getVarName() +"="+newValue);
-		//						}                     
-		//					});
-		//					//Logger.log(LogEnum.DEBUG,"\trefreshed checkbox for "+row.getVarName() +"="+booleanProp);
-		//					return booleanProp;
-		//				}
-		//				return booleanProp;
-		//			}
-		//		});
-
-
-		//		// GENDER (COMBO BOX).
-		//		valTypeCol.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<AttrsAndValue, String>, //
-		//        ObservableValue<String>>() {
-		// 
-		//            @Override
-		//            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<AttrsAndValue, String> param) {
-		//                TreeItem<AttrsAndValue> treeItem = param.getValue();
-		//                AttrsAndValue attr = treeItem.getValue();
-		//                // F,M
-		//                String genderCode = attr.getTypeAndPos().get(0);
-		//                //String type = Gender.getByCode(genderCode);
-		//                return new SimpleObjectProperty<String>(genderCode);
-		//            }
-		//        });
-		//		
-		//        ObservableList<String> genderList = FXCollections.observableArrayList(//
-		//                "Raw Value","Calc Value","Enum/Bitmap");
-		//        valTypeCol.setCellFactory(ComboBoxTreeTableCell.forTreeTableColumn(genderList));
-		// 
-		//        // After user edit on cell, update to Model.
-		//        valTypeCol.setOnEditCommit(new EventHandler<TreeTableColumn.CellEditEvent<AttrsAndValue, String>>() {
-		// 
-		//            @Override
-		//            public void handle(TreeTableColumn.CellEditEvent<AttrsAndValue, String> event) {
-		//                TreeItem<AttrsAndValue> item = event.getRowValue();
-		//               // Employee emp = item.getValue();
-		//                //String newGender = event.getNewValue();
-		//                //emp.setGender(newGender.getCode());
-		//                //Logger.log(LogEnum.DEBUG,"Single column commit. new gender:" +newGender);
-		//               // Logger.log(LogEnum.DEBUG,"EMP:"+emp.isSingle());
-		//            }
-		//        });
-		//        
-		//        valTypeCol.setCellFactory((TreeTableColumn<AttrsAndValue, Map<Integer, String>> param) -> {
-		//			TreeTableCell<AttrsAndValue, Map<Integer, String>> cell = new TreeTableCell<AttrsAndValue, Map<Integer, String>>(){
-		//				@Override
-		//				// updates cells color
-		//				protected void updateItem(Map<Integer, String> item, boolean empty)
-		//				{
-		//					super.updateItem(item, empty);
-		//					
-		//					if (!empty && null!=item)
-		//					{
-		//						//Logger.log(LogEnum.DEBUG,item);
-		//					}
-		//					//cell.
-		//				}
-		//			};
-		//			return cell;
-		//		});
 
 		// adds columns and root
 		varTree.getColumns().add(colCheckBox);
