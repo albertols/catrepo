@@ -3,9 +3,7 @@ package application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale.Category;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
@@ -24,7 +22,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -35,24 +32,14 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
 
 public class MainController implements Initializable
 {
@@ -142,8 +129,8 @@ public class MainController implements Initializable
 	{
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
-		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_4);
-		csv = new InputCSV(InputCSV.CSV_PATH_8, InputCSV.HEADER);
+		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_11);
+		csv = new InputCSV(InputCSV.CSV_PATH_12, InputCSV.HEADER);
 		csv.exec();
 		//csv.writeMeas();
 		//csv.showCalendarMap();
@@ -347,7 +334,7 @@ public class MainController implements Initializable
 
 		// plotBtn
 		case "plotBtn":
-//			chartList.get(0).getData().clear();
+//			TODO:clear chart map
 			chartMap.forEach((type, lineChart)->{
 				lineChart.getData().clear();
 			});
