@@ -37,7 +37,7 @@ public class InputCSV extends CSVConfig
 	public final static String CSV_PATH_7 = "input/csv/12_13Jun/VATP_32257_CatRecVATPRATP_20190612_112822.log.csv";
 	public final static String CSV_PATH_8 = "input/csv/12_13Jun/VATO_38159_CatRecNP_20190612_035209.log.csv";
 	public final static String CSV_PATH_9 = "input/csv/12_13Jun/VATO_38159_CatRecNP_20190613_115437.log.csv";
-	public final static String CSV_PATH_10 = "input/csv/new/VATO_38159_CatRecNP_20190613_120336.log.csv";
+	public final static String CSV_PATH_10 = "input/csv/12_13Jun/VATO_38159_CatRecNP_20190613_120336.log.csv";
 	public final static String CSV_PATH_11 = "input/csv/14Jun/VATO_38159_CatRecNP_20190614_105424.log.csv";
 	public final static String CSV_PATH_12 = "input/csv/14Jun/VATP_32257_CatRecNP_20190614_105425.log.csv";
 	public final static String DELIMITER = ", ";

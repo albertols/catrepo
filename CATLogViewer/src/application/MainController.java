@@ -3,9 +3,11 @@ package application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -35,7 +37,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
@@ -266,21 +267,30 @@ public class MainController implements Initializable
 
 	private void initPlots ()
 	{
-		int x = 0;
+//		PriorityQueue<AbstractChart> priorityChartList = new PriorityQueue<AbstractChart>
+//		(Comparator.comparingInt(e->e.getProirity()));
+		PriorityQueue<AbstractChart> priorityChartList = new PriorityQueue<AbstractChart>();
 		for (Entry<Integer, String> e: csv.measValMap.get(1).typeAndPos.entrySet())
 		{
 			String type = e.getValue();
-			ChartFactory cf = new ChartFactory();
-			AbstractChart ac = cf.makeChart(type);
+			AbstractChart ac = new ChartFactory().makeChart(type);
 			
 			if (null!=ac)
 			{
-				chartsGrid.getRowConstraints().add(x, ac.getRowc());
-				chartsGrid.getColumnConstraints().add(0, ac.getColc());
-				chartsGrid.add(ac.getChart(), 0, x);
-				chartMap.put(type, (LineChart) ac.getChart());
-				x++;
+				priorityChartList.add(ac);
+				System.out.println("added " + type);
 			}
+		}
+		
+		int x = 0;
+		for (AbstractChart ac: priorityChartList)
+		{
+			chartsGrid.getRowConstraints().add(x, ac.getRowc());
+			chartsGrid.getColumnConstraints().add(0, ac.getColc());
+			chartsGrid.add(ac.getChart(), 0, x);
+			chartMap.put(ac.getName(), (LineChart) ac.getChart());
+			System.out.println("\tadded " + ac.getName());
+			x++;
 		}
 	}
 
@@ -366,14 +376,14 @@ public class MainController implements Initializable
 		log_TextArea.appendText(sb.toString());
 	}
 
-
 	private void plotVar(CATRow row)
 	{	
+		// attrs, name and type
 		AttrsAndValue attrs = row.getAttrsAndValue();
-		//defining a series
 		String name = attrs.getVarName();	
 		String type = row.getComboBox().getValue();
 
+		// filter by type
 		List<AttrAndValue> attrsMapEntry = attrs.attrsMap
 				.entrySet()
 				.stream()
@@ -382,88 +392,12 @@ public class MainController implements Initializable
 				.findFirst()
 				.orElse(null);
 
-		// getSeries
-		chartMap.get(type).getData().add(getSeries(type, name, attrsMapEntry));
+		// getSeries through factory
+		Series serie = new ChartFactory().makeSeries(type, startSimTime, endSimTime).getSeries(name, attrsMapEntry);
+		chartMap.get(type).getData().add(serie);
 		chartMap.get(type).autosize();
 	}
 	
-	private Series getSeries (String type, String name, List<AttrAndValue> attrsMapEntry)
-	{
-		Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		switch (type) {
-		case "Raw Value":
-			int x=0;
-			Series<Number, Number> rawSeries = new XYChart.Series<Number, Number>();
-			rawSeries.setName(name);
-			if (null!=attrsMapEntry && attrsMapEntry.size()>0)
-			{
-				for (AttrAndValue attr:attrsMapEntry)
-				{
-					Number y = Integer.parseInt(attr.v);
-					if (name.contains("Speed")) //TODO: input .xml
-					{
-						y=Integer.parseInt(attr.v)/1000;
-					}
-					if (isAttrInDateRange(attr))
-					{
-						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
-						x++;
-					}
-				}
-			}
-			return rawSeries;
-			// TODO
-		case "Calc Value":
-			break;
-
-		case "Enum/Bitmap":
-			
-			x=0;
-			Series<Number, String> enumSeries = new XYChart.Series<Number, String>();
-			enumSeries.setName(name);
-			if (null!=attrsMapEntry && attrsMapEntry.size()>0)
-			{
-				for (AttrAndValue attr:attrsMapEntry)
-				{
-					String y = attr.v;
-					
-					if (isAttrInDateRange(attr) && y.length()>0)
-					{
-						enumSeries.getData().add(new XYChart.Data<Number, String>(x, y));
-						x++;
-					}
-				}
-			}
-			return enumSeries;
-
-		default:
-			return null;
-		}
-		return series;
-	}
-	
-	private boolean isAttrInDateRange (AttrAndValue attr)
-	{
-		if (startSimTime!=null && endSimTime!=null)
-		{
-			if(attr.getTime().after(startSimTime.getTime())
-					&& attr.getTime().before(endSimTime.getTime()))
-			{
-				return true;
-
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return false;
-		}
-		
-	}
-
 	private void clearBoxes()
 	{
 		log_TextArea.appendText("\nClearing Boxes");
