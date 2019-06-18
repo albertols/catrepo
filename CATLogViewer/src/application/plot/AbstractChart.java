@@ -1,15 +1,24 @@
 package application.plot;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 import com.parser.utils.csv.AttrAndValue;
 
+import javafx.geometry.Insets;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 
+/**
+ * Abstract class to wrap a XTchart (e.g: LineChart), RowConstraints, ColumnConstraints and Insets (for a GridPane) and Calendar boundaries.
+ * It also sets up priority to embed Charts in the GUI and priorities to be plot over other AbstractChart types.
+ * 
+ * @author alopez
+ *
+ */
 public abstract class AbstractChart implements Comparable<AbstractChart>
 {
 	private XYChart chart;
@@ -19,6 +28,13 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 	private Calendar startSimTime;
 	private Calendar endSimTime;
 	private int proirity = 0;
+	private int priorityToPlot=0;
+	private Insets insets = new Insets(10, 1, 10, 1);
+	
+	public AbstractChart()
+	{
+		
+	}
 	
 	public AbstractChart(String name)
 	{
@@ -74,6 +90,14 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 		this.endSimTime = endSimTime;
 	}
 	
+	public Insets getInsets() {
+		return insets;
+	}
+
+	public void setInsets(Insets insets) {
+		this.insets = insets;
+	}
+
 	public int getProirity() {
 		return proirity;
 	}
@@ -82,6 +106,14 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 		this.proirity = proirity;
 	}
 	
+	public int getPriorityToPlot() {
+		return priorityToPlot;
+	}
+
+	public void setPriorityToPlot(int priorityToPlot) {
+		this.priorityToPlot = priorityToPlot;
+	}
+
 	@Override
 	public int compareTo(AbstractChart priorityTocompare) {
 		return Integer.compare(getProirity(), priorityTocompare.getProirity());
@@ -105,6 +137,11 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 //		}
 	}
 
+	/**
+	 * Assesses if an @AttrAndValue is within a Calendar range
+	 * @param attr
+	 * @return boolean
+	 */
 	protected boolean isAttrInDateRange (AttrAndValue attr)
 	{
 		if (startSimTime!=null && endSimTime!=null)
@@ -123,6 +160,24 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 		else
 		{
 			return false;
+		}
+		
+	}
+	
+	/**
+	 * Class to compare AbstractChart by priorityToPlot.
+	 * 
+	 * @author alopez
+	 *
+	 */
+	public class PriorityPlot implements Comparator<AbstractChart>
+	{
+		@Override
+		public int compare(AbstractChart ac0, AbstractChart ac1)
+		{
+			
+			//return ac0.getPriorityToPlot()-ac1.getPriorityToPlot();
+			return ac1.getPriorityToPlot()-ac0.getPriorityToPlot();
 		}
 		
 	}

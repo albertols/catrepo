@@ -28,6 +28,7 @@ public class CalcValueChart extends AbstractChart
 	{
 		super (name);
 		setProirity(2);
+		setPriorityToPlot(2);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
 	
@@ -65,7 +66,7 @@ public class CalcValueChart extends AbstractChart
 					Double i = Double.valueOf(attr.v);
 					if (isAttrInDateRange(attr))
 					{
-						Logger.log(LogEnum.DEBUG,"\tdouble "+i);
+						//Logger.log(LogEnum.DEBUG,"\tdouble "+i);
 						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, i));
 						x++;
 					}

@@ -27,6 +27,7 @@ public class EnumChart extends AbstractChart
 	{
 		super (name);
 		setProirity(1);
+		setPriorityToPlot(3);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
 //		bigxAxis.setAutoRanging(false);
@@ -45,7 +46,7 @@ public class EnumChart extends AbstractChart
 		getChart().getYAxis().setAutoRanging(true);
 		
 		
-		setRowc(new RowConstraints(350));
+		setRowc(new RowConstraints(400));
 		getRowc().setVgrow(Priority.ALWAYS);
 		//chartsGrid.getRowConstraints().add(x, row1);
 		
@@ -54,6 +55,11 @@ public class EnumChart extends AbstractChart
 	}
 	
 	
+	public EnumChart()
+	{
+		super ();
+	}
+
 	@Override
 	public Series getSeries(String varName, List<AttrAndValue> attrsMapEntry)
 	{

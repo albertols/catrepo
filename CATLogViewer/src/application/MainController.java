@@ -278,10 +278,8 @@ public class MainController implements Initializable
 			if (null!=ac)
 			{
 				chartList.add(ac);
-				System.out.println("added " + type + "="+ac.getProirity());
 			}
 		}
-		
 		
 		// insertion by priority
 		int x = 0;
@@ -291,8 +289,8 @@ public class MainController implements Initializable
 			chartsGrid.getRowConstraints().add(x, ac.getRowc());
 			chartsGrid.getColumnConstraints().add(0, ac.getColc());
 			chartsGrid.add(ac.getChart(), 0, x);
+			GridPane.setMargin(chartsGrid.getChildren().get(x), ac.getInsets());
 			chartMap.put(ac.getName(), (LineChart) ac.getChart());
-			System.out.println("\tadded " + ac.getName());
 			x++;
 		}
 	}
