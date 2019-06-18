@@ -84,35 +84,25 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 	
 	@Override
 	public int compareTo(AbstractChart priorityTocompare) {
-		//return Integer.compare(getProirity(), priorityTocompare.getProirity());
-		//return Integer.compare(priorityTocompare.getProirity(), getProirity());
-//		if(getProirity() > priorityTocompare.getProirity()) {
+		return Integer.compare(getProirity(), priorityTocompare.getProirity());
+//		if(getProirity() > priorityTocompare.getProirity())
+//		{
+//			System.out.println("\t > "+getName()+"="+getProirity() + " against. "+
+//					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
 //			return 1;
+//		}
+//		else if(getProirity() < priorityTocompare.getProirity()) 
+//		{
+//			System.out.println("\t < "+getName()+"="+getProirity() + " against. "+
+//					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
+//			return -1;
 //		}
 //		else
 //		{
-//			return -1;
+//			System.out.println("\t ="+getName()+"="+getProirity() + " against. "+
+//					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
+//			return 0;
 //		}
-//		System.out.println("\t---->"+getName()+"="+getProirity() + " against. "+
-//				priorityTocompare.getName()+"="+priorityTocompare.getProirity());
-		if(getProirity() > priorityTocompare.getProirity())
-		{
-			System.out.println("\t > "+getName()+"="+getProirity() + " against. "+
-					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
-			return -1;
-		}
-		else if(getProirity() < priorityTocompare.getProirity()) 
-		{
-			System.out.println("\t < "+getName()+"="+getProirity() + " against. "+
-					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
-			return 1;
-		}
-		else
-		{
-			System.out.println("\t ="+getName()+"="+getProirity() + " against. "+
-					priorityTocompare.getName()+"="+priorityTocompare.getProirity());
-			return 0;
-		}
 	}
 
 	protected boolean isAttrInDateRange (AttrAndValue attr)

@@ -26,7 +26,7 @@ public class EnumChart extends AbstractChart
 	public EnumChart(String name)
 	{
 		super (name);
-		setProirity(2);
+		setProirity(1);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
 //		bigxAxis.setAutoRanging(false);

@@ -25,7 +25,7 @@ public class RawValueChart extends AbstractChart
 	public RawValueChart(String name)
 	{
 		super (name);
-		setProirity(3);
+		setProirity(0);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
 	

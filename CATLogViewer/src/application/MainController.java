@@ -3,6 +3,7 @@ package application;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.log.LogEnum;
 import com.log.Logger;
@@ -131,7 +133,7 @@ public class MainController implements Initializable
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
 		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_11);
-		csv = new InputCSV(InputCSV.CSV_PATH_12, InputCSV.HEADER);
+		csv = new InputCSV(InputCSV.CSV_PATH_11, InputCSV.HEADER);
 		csv.exec();
 		//csv.writeMeas();
 		//csv.showCalendarMap();
@@ -267,9 +269,7 @@ public class MainController implements Initializable
 
 	private void initPlots ()
 	{
-//		PriorityQueue<AbstractChart> priorityChartList = new PriorityQueue<AbstractChart>
-//		(Comparator.comparingInt(e->e.getProirity()));
-		PriorityQueue<AbstractChart> priorityChartList = new PriorityQueue<AbstractChart>();
+		List<AbstractChart> chartList =  new ArrayList<AbstractChart>();
 		for (Entry<Integer, String> e: csv.measValMap.get(1).typeAndPos.entrySet())
 		{
 			String type = e.getValue();
@@ -277,13 +277,16 @@ public class MainController implements Initializable
 			
 			if (null!=ac)
 			{
-				priorityChartList.add(ac);
-				System.out.println("added " + type);
+				chartList.add(ac);
+				System.out.println("added " + type + "="+ac.getProirity());
 			}
 		}
 		
+		
+		// insertion by priority
 		int x = 0;
-		for (AbstractChart ac: priorityChartList)
+		Collections.sort(chartList);
+		for (AbstractChart ac: chartList)
 		{
 			chartsGrid.getRowConstraints().add(x, ac.getRowc());
 			chartsGrid.getColumnConstraints().add(0, ac.getColc());
