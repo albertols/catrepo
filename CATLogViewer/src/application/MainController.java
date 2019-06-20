@@ -18,7 +18,8 @@ import com.log.Logger;
 import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrAndValue;
 import com.parser.utils.csv.AttrsAndValue;
-import com.parser.utils.csv.InputCSV;
+import com.parser.utils.csv.CATInputCSV;
+import com.parser.utils.csv.ptu.PTUInputCSV;
 
 import application.plot.AbstractChart;
 import application.plot.ChartFactory;
@@ -88,7 +89,7 @@ public class MainController implements Initializable
 	
 	private TreeItem <CATRow> varsRoot;
 	
-	private InputCSV csv;
+	private CATInputCSV csv;
 
 	private Calendar startSimTime;
 	private Calendar endSimTime;
@@ -132,8 +133,9 @@ public class MainController implements Initializable
 	{
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
-		log_TextArea.appendText("Reading "+ InputCSV.CSV_PATH_11);
-		csv = new InputCSV(InputCSV.CSV_PATH_11, InputCSV.HEADER);
+		log_TextArea.appendText("Reading "+ CATInputCSV.CSV_PATH_11);
+		//csv = new CATInputCSV(CATInputCSV.CSV_PATH_11, CATInputCSV.HEADER);
+		csv = new PTUInputCSV(PTUInputCSV.CSV_PTU_PATH_1, PTUInputCSV.HEADER);
 		csv.exec();
 		//csv.writeMeas();
 		//csv.showCalendarMap();
@@ -173,7 +175,7 @@ public class MainController implements Initializable
 				public void changed(ObservableValue<? extends Number> ov,
 						Number oldVal, Number newVal) {
 					int val = newVal.intValue();
-					startTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+					startTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), csv.getCAT_DATE_STRING_FORMAT_JDK7()));
 					startCountField.setText(Integer.toString(val));
 					if (startSlider.getValue()>endSlider.getValue())
 					{
@@ -191,7 +193,7 @@ public class MainController implements Initializable
 				public void changed(ObservableValue<? extends Number> ov,
 						Number oldVal, Number newVal) {
 					int val = newVal.intValue();
-					endTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+					endTextField.setText(StringUtils.calendarToString(csv.calMap.get(val), csv.getCAT_DATE_STRING_FORMAT_JDK7()));
 					endCountField.setText(Integer.toString(val));
 					if (endSlider.getValue()<startSlider.getValue())
 					{
@@ -247,14 +249,14 @@ public class MainController implements Initializable
 		if (null!=csv.endCal)
 		{
 			endSimTime = csv.endCal;
-			endTextField.setText(StringUtils.calendarToString(endSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			endTextField.setText(StringUtils.calendarToString(endSimTime, csv.getCAT_DATE_STRING_FORMAT_JDK7()));
 			endCountField.setText(Integer.toString(csv.calMap.size()-1));
 			endCountField.setMinHeight(endTextField.getMaxHeight());
 		}
 		if (null!=csv.startCal)
 		{
 			startSimTime = csv.startCal;
-			startTextField.setText(StringUtils.calendarToString(startSimTime, InputCSV.CAT_DATE_STRING_FORMAT_JDK7));
+			startTextField.setText(StringUtils.calendarToString(startSimTime, csv.getCAT_DATE_STRING_FORMAT_JDK7()));
 			startCountField.setText("0");
 			startCountField.setMinHeight(startTextField.getMaxHeight());
 		}
@@ -270,7 +272,7 @@ public class MainController implements Initializable
 	private void initPlots ()
 	{
 		List<AbstractChart> chartList =  new ArrayList<AbstractChart>();
-		for (Entry<Integer, String> e: csv.measValMap.get(1).typeAndPos.entrySet())
+		for (Entry<Integer, String> e: csv.measValMap.get(2).typeAndPos.entrySet())//TODO: dynamic offset
 		{
 			String type = e.getValue();
 			AbstractChart ac = new ChartFactory().makeChart(type);

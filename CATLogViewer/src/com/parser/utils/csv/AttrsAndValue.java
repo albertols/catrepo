@@ -14,6 +14,8 @@ import java.util.TreeMap;
  */
 public class AttrsAndValue
 {
+	public static String CAT_DATE_STRING_FORMAT_JDK8 = null;
+	public static String CAT_DATE_STRING_FORMAT_JDK7 = null;
 	public int posName;
 	public String varName;
 	public Map<Integer, String> typeAndPos = new TreeMap<Integer, String>();
@@ -21,10 +23,12 @@ public class AttrsAndValue
 	public List<AttrAndValue> attrs = new ArrayList<AttrAndValue>();
 	public Map<String, List<AttrAndValue>> attrsMap = new HashMap<String, List<AttrAndValue>>();
 	
-	public AttrsAndValue(int pos, String varName)
+	public AttrsAndValue(int pos, String varName, String format7, String format8)
 	{
 		this.posName = pos;
 		setVarName(varName);
+		AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK8 = format8;
+		AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7 = format7;
 	}
 	
 	@Override

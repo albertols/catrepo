@@ -46,8 +46,9 @@ public class AttrAndValue implements Comparable<AttrAndValue>
 	{
 		try
 		{
-			this.cal = StringUtils.stringToCal(ts.trim(), InputCSV.CAT_DATE_STRING_FORMAT_JDK8);
-			this.calTs = StringUtils.calendarToString(cal, InputCSV.CAT_DATE_STRING_FORMAT_JDK7);
+			//Logger.log(LogEnum.DEBUG, AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK8 + "=8 - 7=" + AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7);
+			this.cal = StringUtils.stringToCal(ts.trim(), AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK8);
+			this.calTs = StringUtils.calendarToString(cal, AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7);
 			//Logger.log(LogEnum.DEBUG,"\tts "+ts+" vs. "+ calTs);
 		}
 		catch (ParseException e)
@@ -55,9 +56,10 @@ public class AttrAndValue implements Comparable<AttrAndValue>
 			Logger.log(LogEnum.ERROR,"WRONG Date conversion for "+ toString());
 			e.printStackTrace();
 		}
-		if (tsConversionChecker ()!=true)
+		//if (tsConversionChecker ()!=true)
 		{
-			Logger.log(LogEnum.ERROR,"WRONG Date conversion for "+ toString());
+			//Logger.log(LogEnum.WARNING,"WRONG Date conversion Check for "+ calTs + " != "+ toString());
+			//System.exit(0);
 		}
 	}
 	

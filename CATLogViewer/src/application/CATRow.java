@@ -51,7 +51,6 @@ public class CATRow
 		if (this.comboBox.getItems().size()>0 && null!=this.comboBox.getItems().get(0))
 		{
 			this.comboBox.setValue(this.comboBox.getItems().get(0));
-			//TODO: automatic selectable option
 			Logger.log(LogEnum.DEBUG,"Init CheckBox="+varName);
 			automaticSelection ();
 		}
