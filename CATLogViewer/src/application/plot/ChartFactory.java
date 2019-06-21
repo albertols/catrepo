@@ -15,8 +15,8 @@ public class ChartFactory
 			return new CalcValueChart(CalcValueChart.NAME);
 
 		default:
-			return new CalcValueChart(RawValueChart.NAME);
-			//return null;//TODO: standalone LineChart with number Axis
+			//return new CalcValueChart(RawValueChart.NAME);
+			return null;//TODO: standalone LineChart with number Axis
 		}
 	}
 	

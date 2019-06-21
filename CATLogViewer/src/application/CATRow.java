@@ -3,8 +3,6 @@ package application;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-
 import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.csv.AttrAndValue;
@@ -13,11 +11,8 @@ import com.parser.utils.csv.AttrsAndValue;
 import application.plot.AbstractChart;
 import application.plot.ChartFactory;
 import application.plot.EnumChart;
-import application.plot.AbstractChart.PriorityPlot;
-import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.GridPane;
 
 public class CATRow
 {
@@ -51,7 +46,7 @@ public class CATRow
 		if (this.comboBox.getItems().size()>0 && null!=this.comboBox.getItems().get(0))
 		{
 			this.comboBox.setValue(this.comboBox.getItems().get(0));
-			Logger.log(LogEnum.DEBUG,"Init CheckBox="+varName);
+			//Logger.log(LogEnum.DEBUG,"Init CheckBox="+varName);
 			automaticSelection ();
 		}
 //		getCheckBox().selectedProperty().addListener(new ChangeListener<Boolean>() {

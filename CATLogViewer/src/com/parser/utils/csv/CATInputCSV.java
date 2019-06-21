@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,10 @@ import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.StringUtils;
 import com.parser.utils.csv.CSVConfig;
+
+import application.plot.CalcValueChart;
+import application.plot.EnumChart;
+import application.plot.RawValueChart;
 
 /**
  * Parser for an input .csv exported with CAT format (from .log).
@@ -54,6 +59,14 @@ public class CATInputCSV extends CSVConfig
 	public Calendar startCal;
 	public Calendar endCal;
 	public Map<Integer ,Calendar> calMap = null;
+	
+	public Map<String, Integer> typeMap = new HashMap<String, Integer>() {
+		{
+			put(RawValueChart.NAME, 0);
+			put(CalcValueChart.NAME, 1);
+			put(EnumChart.NAME, 2);
+		}
+	};
 
 
 	public CATInputCSV(String filePath, String headerFormat)
@@ -102,11 +115,6 @@ public class CATInputCSV extends CSVConfig
 			Logger.log(LogEnum.DEBUG,name);
 			sb.append(name+"\n");
 			sb.append(values.toString()+"\n");
-
-			//			valList.forEach((val)->{
-			//				Logger.log(LogEnum.DEBUG,"\t\t"+val.toString());
-			//				sb.append("\t\t"+val.toString()+"\n");
-			//			});
 		});
 
 		parser.flushFileHandlerWriter(parser.getFile().getName().trim()+".txt", sb.toString());
@@ -157,7 +165,7 @@ public class CATInputCSV extends CSVConfig
 							for (int x=1; x<fields.length /*&& x<MAX_ATTR_SIZE*/; x++)
 							{
 								//Logger.log(LogEnum.DEBUG,"*"+fields[x].trim());
-								if (count==3)
+								if (count==typeMap.size())
 								{
 									count=0;
 									//System.exit(0);
@@ -165,7 +173,6 @@ public class CATInputCSV extends CSVConfig
 								if (this.measValMap.containsKey(x))
 								{
 									aav = measValMap.get(x);
-
 								}
 								if (null!=aav)
 								{
@@ -305,15 +312,12 @@ public class CATInputCSV extends CSVConfig
 			}
 		}
 
-
 		//		showMeasNameMap ();
 		MAX_ATTR_SIZE= vars1.length;
 		Logger.log(LogEnum.INFO,"Line 1 size: " + varList.size() + " vs. "+ vars1.length);
-		Logger.log(LogEnum.INFO,"Naked Line 1 size:" + varNakedList.size() + " vs. "+ ((varNakedList.size()-1)*3));
+		Logger.log(LogEnum.INFO,"Naked Line 1 size:" + varNakedList.size() + " vs. "+ ((varNakedList.size()-1)*typeMap.size()));
 		Logger.log(LogEnum.INFO,"Line 2 size: " + varList.size() + " vs. "+ vars2.length);
 		//System.exit(0);
-
-
 
 	}
 
@@ -405,7 +409,5 @@ public class CATInputCSV extends CSVConfig
 	public void setDELIMITER(String dELIMITER) {
 		DELIMITER = dELIMITER;
 	}
-
-
 
 }

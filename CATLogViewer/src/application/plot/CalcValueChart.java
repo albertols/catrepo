@@ -66,6 +66,10 @@ public class CalcValueChart extends AbstractChart
 					Double i = Double.valueOf(attr.v);
 					if (isAttrInDateRange(attr))
 					{
+						if (("Tractive Effort Request").equals(varName))
+						{
+							i=i/2000;
+						}
 						//Logger.log(LogEnum.DEBUG,"\tdouble "+i);
 						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, i));
 						x++;

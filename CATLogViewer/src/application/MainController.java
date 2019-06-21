@@ -4,15 +4,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-
 import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.StringUtils;
@@ -59,22 +55,22 @@ public class MainController implements Initializable
 
 	@FXML
 	public TextArea log_TextArea;
-	
+
 	@FXML
 	public TextField samplesTextField;
-	
+
 	@FXML
 	public TextField startTextField;
-	
+
 	@FXML
 	public TextField endTextField;
-	
+
 	@FXML
 	public TextField startCountField;
-	
+
 	@FXML
 	public TextField endCountField;
-	
+
 	@FXML
 	public TextField sampleTimeTextField;
 
@@ -86,9 +82,9 @@ public class MainController implements Initializable
 
 	@FXML
 	public GridPane chartsGrid;
-	
+
 	private TreeItem <CATRow> varsRoot;
-	
+
 	private CATInputCSV csv;
 
 	private Calendar startSimTime;
@@ -103,12 +99,12 @@ public class MainController implements Initializable
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
 		initCSV ();
-	
+
 		// init UI
 		initSliders ();
 		initPlots ();
 		initTreeItemView ();
-	
+
 	}
 
 	private boolean simTimeChecker ()
@@ -129,15 +125,16 @@ public class MainController implements Initializable
 		return false;
 	}
 
+	// TODO: selectable from GUI
 	private void initCSV()
 	{
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
 		log_TextArea.appendText("Reading "+ CATInputCSV.CSV_PATH_11);
 		//csv = new CATInputCSV(CATInputCSV.CSV_PATH_11, CATInputCSV.HEADER);
-		csv = new PTUInputCSV(PTUInputCSV.CSV_PTU_PATH_1, PTUInputCSV.HEADER);
+		csv = new PTUInputCSV(PTUInputCSV.CSV_PTU_PATH_3, PTUInputCSV.HEADER);
 		csv.exec();
-		//csv.writeMeas();
+		csv.writeMeas();
 		//csv.showCalendarMap();
 	}
 
@@ -148,7 +145,7 @@ public class MainController implements Initializable
 			// max and min
 			Integer min = 0;
 			Integer max = csv.calMap.size()-1;
-			
+
 			// start
 			startSlider.setMin(min);
 			startSlider.setMax(max);
@@ -158,7 +155,7 @@ public class MainController implements Initializable
 			startSlider.setMajorTickUnit(500);
 			startSlider.setMinorTickCount(5);
 			startSlider.setBlockIncrement(10);
-			
+
 			// end
 			endSlider.setMin(min);
 			endSlider.setMax(max);
@@ -168,7 +165,7 @@ public class MainController implements Initializable
 			endSlider.setMajorTickUnit(500);
 			endSlider.setMinorTickCount(5);
 			endSlider.setBlockIncrement(10);
-			
+
 			// listeners
 			// sliders
 			startSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -185,7 +182,7 @@ public class MainController implements Initializable
 						endSlider.setValue(startSlider.getValue()+1);
 						startSlider.setValue(endSlider.getValue()-1);
 					}
-					
+
 					simTimeChecker ();
 				}
 			});
@@ -206,7 +203,7 @@ public class MainController implements Initializable
 					simTimeChecker ();
 				}
 			});
-					
+
 			// TextField counters
 			startCountField.textProperty().addListener((observable, oldValue, newValue)->{
 				try
@@ -236,12 +233,12 @@ public class MainController implements Initializable
 					// nothing to do
 				}
 			});
-			
+
 			// samples
 			samplesTextField.setText(Integer.toString(max+1));
 		}
 	}
-	
+
 	private boolean initTimestampFields()
 	{
 		endSimTime = null;
@@ -260,7 +257,7 @@ public class MainController implements Initializable
 			startCountField.setText("0");
 			startCountField.setMinHeight(startTextField.getMaxHeight());
 		}
-		
+
 		if (null!=endSimTime && null !=startSimTime)
 		{
 			sampleTimeTextField.setText(StringUtils.friendlyTimeDiff(startSimTime, endSimTime));
@@ -272,17 +269,17 @@ public class MainController implements Initializable
 	private void initPlots ()
 	{
 		List<AbstractChart> chartList =  new ArrayList<AbstractChart>();
-		for (Entry<Integer, String> e: csv.measValMap.get(2).typeAndPos.entrySet())//TODO: dynamic offset
+		for (Entry<String, Integer> e: csv.typeMap.entrySet())
 		{
-			String type = e.getValue();
+			String type = e.getKey();
 			AbstractChart ac = new ChartFactory().makeChart(type);
-			
+
 			if (null!=ac)
 			{
 				chartList.add(ac);
 			}
 		}
-		
+
 		// insertion by priority
 		int x = 0;
 		Collections.sort(chartList);
@@ -347,7 +344,7 @@ public class MainController implements Initializable
 
 		// plotBtn
 		case "plotBtn":
-//			TODO:clear chart map
+			//			clears chart map
 			chartMap.forEach((type, lineChart)->{
 				lineChart.getData().clear();
 			});
@@ -360,7 +357,7 @@ public class MainController implements Initializable
 			break;
 		}
 	}
-	
+
 
 	private void plotVars()
 	{
@@ -368,13 +365,13 @@ public class MainController implements Initializable
 		sb.append("\nPloting vars: ");
 		varsRoot.getChildren().forEach((catRow)->{
 			CATRow row = catRow.getValue();
-			
+
 			if (row.getCheckBox().isSelected())
 			{
 				sb.append(" "+row.getVarName()+",");
 				plotVar(row);
 			}
-			
+
 		});
 		log_TextArea.appendText(sb.toString());
 	}
@@ -400,7 +397,7 @@ public class MainController implements Initializable
 		chartMap.get(type).getData().add(serie);
 		chartMap.get(type).autosize();
 	}
-	
+
 	private void clearBoxes()
 	{
 		log_TextArea.appendText("\nClearing Boxes");
@@ -416,14 +413,40 @@ public class MainController implements Initializable
 	{
 		List<TreeItem <CATRow>> list =  new ArrayList<>();
 
-		csv.measValMap.forEach((pos,vars)->{
-			CATRow row = new CATRow (vars,new CheckBox(),new ComboBox<>(FXCollections.observableArrayList(vars.getTypeList())));
-			//row = new CATRow (vars);
-			list.add(new TreeItem<CATRow>(row));
-			//Logger.log(LogEnum.DEBUG,vars);
-			System.out.print(vars.posName + " ");
+		csv.measValMap.forEach((pos,attrs)->{
+
+			CATRow row = newRow (attrs);
+			String name = attrs.varName;
+			if (null != row)
+			{
+				list.add(new TreeItem<CATRow>(row));
+				Logger.log(LogEnum.INFO, "Added CATRow="+name);
+
+			}
+			else
+			{
+				Logger.log(LogEnum.WARNING,"No attrs for new CATRow="+name);
+			}
+
+
 		});
 		return list;
+	}
+
+	private CATRow newRow (AttrsAndValue attrs)
+	{
+		CATRow row = null;
+
+		for (Entry<String, List<AttrAndValue>> entry:attrs.attrsMap.entrySet())
+		{
+			List<AttrAndValue>  attrList = entry.getValue();
+			if (attrList.size()>0)
+			{
+				row = new CATRow (attrs,new CheckBox(),new ComboBox<>(FXCollections.observableArrayList(attrs.getTypeList())));
+				return row;
+			}
+		}
+		return row;
 	}
 
 }

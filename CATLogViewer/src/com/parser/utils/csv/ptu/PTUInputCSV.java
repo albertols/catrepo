@@ -6,13 +6,20 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.log.LogEnum;
 import com.log.Logger;
+import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.CATInputCSV;
+
+import application.plot.CalcValueChart;
+import application.plot.EnumChart;
+import application.plot.RawValueChart;
 
 /**
  * Parser for an input .csv exported with PTU format (from .xlsx).
@@ -25,6 +32,8 @@ public class PTUInputCSV extends CATInputCSV
 //	public String CAT_DATE_STRING_FORMAT_JDK8 = "dd LLL uuuu HH:mm:ss:SSSS";
 //	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd MMMM yyyy HH:mm:ss:SSSS";
 	public final static String CSV_PTU_PATH_1 = "input/csv/PTU/S0X_STOPPING_NOMINAL_T1.PLD(2).csv";
+	public final static String CSV_PTU_PATH_2 = "input/csv/PTU/2.csv";
+	public final static String CSV_PTU_PATH_3 = "input/csv/PTU/scr_uucm_vato_023_T1_PM_Speed.xls.csv";
 	public String CAT_DATE_STRING_FORMAT_JDK8 = "dd-MM-uuuu HH:mm:ss:SSSS";
 	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd-MM-yyyy HH:mm:ss:SSSS";
 
@@ -79,8 +88,6 @@ public class PTUInputCSV extends CATInputCSV
 				{
 					String[] fields = line.split(DELIMITER);
 					List<String> row = new ArrayList<>();
-					List<AttrsAndValue> rowValues = new ArrayList<>();
-
 
 					if (true && fields.length>2/*fields.length==headerSize *//*fieldAssessment (String s)*/)
 					{
@@ -90,30 +97,47 @@ public class PTUInputCSV extends CATInputCSV
 						{
 							lastTs=ts;
 							row.add(ts);
-							int count = 0;
 							AttrsAndValue aav = null;
 							for (int x=1; x<fields.length /*&& x<MAX_ATTR_SIZE*/; x++)
 							{
 								//Logger.log(LogEnum.DEBUG,"*"+fields[x].trim());
-								if (count==1)
+								
+								String field = fields[x].trim();
+								String lettersField = StringUtils.onlyLetters(field);
+								int type = 0;
+								
+								if (lettersField.length()>0)
 								{
-									count=0;
-									//System.exit(0);
+									// Raw Value case (Hex case)
+									if (("x").equalsIgnoreCase(String.valueOf(lettersField.charAt(0))))
+									{
+										field = Integer.toString(Integer.decode(field));
+										type = typeMap.get(RawValueChart.NAME);
+										//Logger.log(LogEnum.DEBUG, "*"+field);
+									}
+									// Enum/Value case
+									else
+									{
+										type = typeMap.get(EnumChart.NAME);
+									}
+									
 								}
+								else
+								{
+									// Calc Value
+									type = typeMap.get(CalcValueChart.NAME);
+								}
+								
+								//TODO: magic happens here!
 								if (this.measValMap.containsKey(x))
 								{
 									aav = measValMap.get(x);
 								}
-								if (null!=aav)
+								if (null!=aav && field.length()>0)
 								{
-									//TODO: magic happens here!
-									aav.newAttr(ts, count, fields[x].trim());
-									count++;
-
-									//									rowValues.add(valAndTs);
-									//row.add(valAndTs.val);
-									//									this.measValMap.get(x).add(valAndTs);
+									aav.newAttr(ts, type, field);
 								}
+								
 							}
 							//this.rows.add(row);
 							//fosList.add(new VarPojo(/*row.get(0), Integer.parseInt(row.get(1)), row.get(2))*/));
@@ -212,7 +236,10 @@ public class PTUInputCSV extends CATInputCSV
 				// adds attr
 				AttrsAndValue newAttr = new AttrsAndValue(x, varName, getCAT_DATE_STRING_FORMAT_JDK7(), getCAT_DATE_STRING_FORMAT_JDK8());
 				this.measNameMap.put(x, varName);
-				newAttr.addFoTypeAndPos(0, "Calc Value"); // TODO: for more interpretations
+
+				newAttr.addFoTypeAndPos(typeMap.get(RawValueChart.NAME), RawValueChart.NAME);
+				newAttr.addFoTypeAndPos(typeMap.get(CalcValueChart.NAME),CalcValueChart.NAME);
+				newAttr.addFoTypeAndPos(typeMap.get(EnumChart.NAME), EnumChart.NAME);
 				Logger.log(LogEnum.DEBUG,"--"+varName);
 				Logger.log(LogEnum.DEBUG,newAttr.showTypeAndPos());
 				this.measValMap.put(x, newAttr);
