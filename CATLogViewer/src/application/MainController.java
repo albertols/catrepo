@@ -1,6 +1,8 @@
 package application;
 
+import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -9,12 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import com.log.LogEnum;
 import com.log.Logger;
 import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrAndValue;
 import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.CATInputCSV;
+import com.parser.utils.csv.CSVConfig;
 import com.parser.utils.csv.ptu.PTUInputCSV;
 
 import application.plot.AbstractChart;
@@ -43,6 +48,8 @@ import javafx.scene.layout.GridPane;
 
 public class MainController implements Initializable
 {
+	@FXML
+	public ComboBox<String> inputComboBox;
 
 	@FXML
 	public TreeTableView<CATRow> varTree;
@@ -83,7 +90,7 @@ public class MainController implements Initializable
 	@FXML
 	public GridPane chartsGrid;
 
-	private TreeItem <CATRow> varsRoot;
+	private TreeItem <CATRow> varsRoot = new TreeItem<CATRow>();
 
 	private CATInputCSV csv;
 
@@ -98,12 +105,29 @@ public class MainController implements Initializable
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
-		initCSV ();
+		initInputComboBox ();
 
-		// init UI
-		initSliders ();
-		initPlots ();
-		initTreeItemView ();
+////		initCSV (CATInputCSV.CSV_PATH_11);
+//		initCSV (PTUInputCSV.CSV_PTU_PATH_3);
+//
+//		// init UI
+//		initSliders ();
+//		initPlots ();
+//		initTreeItemView ();
+
+	}
+
+	private void initInputComboBox()
+	{
+		List<File> l = CSVConfig.getRecursiveCSVFiles("input/", null);
+		if (null!=l)
+		{
+			List<String> csvNames = l.stream()
+					.map(f->f.getPath())
+					.collect(Collectors.toList());
+			inputComboBox.setItems(FXCollections.observableArrayList(csvNames));
+		}
+		
 
 	}
 
@@ -126,13 +150,12 @@ public class MainController implements Initializable
 	}
 
 	// TODO: selectable from GUI
-	private void initCSV()
+	private void initCSV(String csvPath)
 	{
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
-		log_TextArea.appendText("Reading "+ CATInputCSV.CSV_PATH_11);
-		//csv = new CATInputCSV(CATInputCSV.CSV_PATH_11, CATInputCSV.HEADER);
-		csv = new PTUInputCSV(PTUInputCSV.CSV_PTU_PATH_3, PTUInputCSV.HEADER);
+		log_TextArea.appendText("Reading "+ csvPath);
+		csv = new CATInputCSV(csvPath, CATInputCSV.HEADER);
 		csv.exec();
 		csv.writeMeas();
 		//csv.showCalendarMap();
@@ -296,7 +319,16 @@ public class MainController implements Initializable
 
 	private void initTreeItemView()
 	{
-		varsRoot =  new TreeItem<CATRow>();
+		//varsRoot =  new TreeItem<CATRow>();
+		//varsRoot.r
+		if (null!=varTree.getRoot() && varTree.getRoot().getChildren().size()>0)
+		{
+			varTree.getRoot().getChildren().clear();
+			varTree.refresh();
+			varsRoot.getChildren().clear();
+		}
+		
+		//varsRoot.getChildren().clear();
 
 		List<TreeItem <CATRow>> list = newRows();
 		varsRoot.getChildren().addAll(list);
@@ -327,12 +359,23 @@ public class MainController implements Initializable
 		varTree.getColumns().add(valTypeCol);
 		varTree.getColumns().add(posCol);
 		varTree.setRoot(varsRoot);
+		//varTree.refresh();
 	}
 
 	private void updateSimTime (Calendar start, Calendar end)
 	{
 		this.startSimTime = start;
 		this.endSimTime = end;
+	}
+	
+	public void changeCombo (ActionEvent e)
+	{
+		initCSV (inputComboBox.getValue());
+
+		// init UI
+		initSliders ();
+		initPlots ();
+		initTreeItemView ();
 	}
 
 	@FXML

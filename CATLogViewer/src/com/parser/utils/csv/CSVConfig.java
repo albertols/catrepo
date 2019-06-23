@@ -1,5 +1,6 @@
 package com.parser.utils.csv;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,28 @@ public abstract class CSVConfig
 		
 	}
 	
+	public static List<File> getRecursiveCSVFiles (String input, List<File> l)
+	{
+		if (null==l)
+		{
+			l = new ArrayList<>();
+		}
+		
+		for (File f : new File(input).listFiles()) 
+	    {
+			if (f.isFile() && f.getAbsolutePath().endsWith(".csv"))
+	        {
+				l.add(f);
+	        }
+			if (f.isDirectory())
+			{
+				getRecursiveCSVFiles (f.getPath(), l);
+			}
+			
+	    }
+		return l;
+	}
+
 	public void showCSV ()
 	{
 		rows.forEach((row)->{
@@ -73,8 +96,6 @@ public abstract class CSVConfig
 		}
 		return size;
 	}
-	
-	
 
 
 }
