@@ -49,6 +49,7 @@ public class CalcValueChart extends AbstractChart
 		
 		setColc(new ColumnConstraints(1041.0));
 		getColc().setHgrow(Priority.ALWAYS);
+		
 	}
 
 	@Override

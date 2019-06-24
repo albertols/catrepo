@@ -106,6 +106,7 @@ public class MainController implements Initializable
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
+		Logger._verboseLogs_DEBUG();
 		initInputComboBox ();
 	}
 
@@ -152,7 +153,6 @@ public class MainController implements Initializable
 	
 	private void initCSV(String csvPath)
 	{
-		Logger._verboseLogs_DEBUG();
 		// gets .csv
 		log_TextArea.appendText("Reading "+ csvPath);
 		
