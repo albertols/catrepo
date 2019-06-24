@@ -29,8 +29,8 @@ public class Main extends Application
 			//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 //			scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
 			scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
-			primaryStage.setMaxHeight(950);
-			primaryStage.setMaxWidth(2000);
+			//primaryStage.setMaxHeight(950);
+			//primaryStage.setMaxWidth(2000);
 			//primaryStage.setMaximized(true);
 			primaryStage.show();
 		} catch(Exception e) {

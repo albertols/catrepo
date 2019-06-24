@@ -48,17 +48,7 @@ public class CATRow
 			this.comboBox.setValue(this.comboBox.getItems().get(0));
 			//Logger.log(LogEnum.DEBUG,"Init CheckBox="+varName);
 			automaticSelection ();
-		}
-//		getCheckBox().selectedProperty().addListener(new ChangeListener<Boolean>() {
-//			@Override
-//			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-//				getCheckBox().setSelected(!newValue);
-//				Logger.log(LogEnum.DEBUG,"hello" + varName + "=" + getCheckBox().isSelected());
-//			}
-//		});
-		
-		
-		
+		}		
 	}
 
 	/**

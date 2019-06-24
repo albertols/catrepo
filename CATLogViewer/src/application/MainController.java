@@ -2,7 +2,6 @@ package application;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -102,19 +101,22 @@ public class MainController implements Initializable
 	 */
 	private Map<String, LineChart> chartMap = new TreeMap<String, LineChart>();
 
+	private int simCount = 0;
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
 		initInputComboBox ();
+	}
 
-////		initCSV (CATInputCSV.CSV_PATH_11);
-//		initCSV (PTUInputCSV.CSV_PTU_PATH_3);
-//
-//		// init UI
-//		initSliders ();
-//		initPlots ();
-//		initTreeItemView ();
-
+	public void changeCombo (ActionEvent e)
+	{
+		initCSV (inputComboBox.getValue());
+	
+		// init GUI
+		initSliders ();
+		initPlots ();
+		initTreeItemView ();
 	}
 
 	private void initInputComboBox()
@@ -127,8 +129,6 @@ public class MainController implements Initializable
 					.collect(Collectors.toList());
 			inputComboBox.setItems(FXCollections.observableArrayList(csvNames));
 		}
-		
-
 	}
 
 	private boolean simTimeChecker ()
@@ -149,13 +149,23 @@ public class MainController implements Initializable
 		return false;
 	}
 
-	// TODO: selectable from GUI
+	
 	private void initCSV(String csvPath)
 	{
 		Logger._verboseLogs_DEBUG();
 		// gets .csv
 		log_TextArea.appendText("Reading "+ csvPath);
-		csv = new CATInputCSV(csvPath, CATInputCSV.HEADER);
+		
+		// TODO: check by code
+		if ((csvPath).contains("PTU"))
+		{
+			csv = new PTUInputCSV(csvPath, CATInputCSV.HEADER);
+		}
+		else
+		{
+			csv = new CATInputCSV(csvPath, CATInputCSV.HEADER);
+		}
+		
 		csv.exec();
 		csv.writeMeas();
 		//csv.showCalendarMap();
@@ -302,6 +312,9 @@ public class MainController implements Initializable
 				chartList.add(ac);
 			}
 		}
+		
+		//reset chartsGrid
+		chartsGrid.getChildren().clear();
 
 		// insertion by priority
 		int x = 0;
@@ -319,37 +332,34 @@ public class MainController implements Initializable
 
 	private void initTreeItemView()
 	{
-		//varsRoot =  new TreeItem<CATRow>();
-		//varsRoot.r
+		// clears TableTreeView
 		if (null!=varTree.getRoot() && varTree.getRoot().getChildren().size()>0)
 		{
-			varTree.getRoot().getChildren().clear();
-			varTree.refresh();
 			varsRoot.getChildren().clear();
+			varTree.getRoot().getChildren().clear();
+			varTree.getColumns().clear();			
 		}
 		
-		//varsRoot.getChildren().clear();
-
 		List<TreeItem <CATRow>> list = newRows();
 		varsRoot.getChildren().addAll(list);
 		varsRoot.setExpanded(true);
 
 		// column for pos
-		TreeTableColumn<CATRow, Integer> posCol =  new TreeTableColumn<CATRow, Integer>("Pos");
+		TreeTableColumn<CATRow, Integer> posCol =  new TreeTableColumn<CATRow, Integer>("Pos"+simCount);
 		posCol.setEditable(false);
 		posCol.setPrefWidth(58.0);
 		posCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("pos"));
 
 		// column for variable
-		TreeTableColumn<CATRow, String> varsCol =  new TreeTableColumn<>("VarName");
+		TreeTableColumn<CATRow, String> varsCol =  new TreeTableColumn<>("VarName"+simCount);
 		varsCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("varName"));
 
 		// column for valType
-		TreeTableColumn<CATRow, Map<Integer, String>> valTypeCol =  new TreeTableColumn<>("ValueType");
+		TreeTableColumn<CATRow, Map<Integer, String>> valTypeCol =  new TreeTableColumn<>("ValueType"+simCount);
 		valTypeCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("comboBox"));
 
 		// column for variable
-		TreeTableColumn<CATRow, CheckBox> colCheckBox =  new TreeTableColumn<CATRow, CheckBox>("Plot");
+		TreeTableColumn<CATRow, CheckBox> colCheckBox =  new TreeTableColumn<CATRow, CheckBox>("Plot"+simCount);
 		colCheckBox.setPrefWidth(58);
 		colCheckBox.setCellValueFactory(new TreeItemPropertyValueFactory<CATRow, CheckBox>("checkBox"));
 
@@ -359,7 +369,6 @@ public class MainController implements Initializable
 		varTree.getColumns().add(valTypeCol);
 		varTree.getColumns().add(posCol);
 		varTree.setRoot(varsRoot);
-		//varTree.refresh();
 	}
 
 	private void updateSimTime (Calendar start, Calendar end)
@@ -368,16 +377,6 @@ public class MainController implements Initializable
 		this.endSimTime = end;
 	}
 	
-	public void changeCombo (ActionEvent e)
-	{
-		initCSV (inputComboBox.getValue());
-
-		// init UI
-		initSliders ();
-		initPlots ();
-		initTreeItemView ();
-	}
-
 	@FXML
 	private void handleAction(ActionEvent event)
 	{
@@ -464,14 +463,11 @@ public class MainController implements Initializable
 			{
 				list.add(new TreeItem<CATRow>(row));
 				Logger.log(LogEnum.INFO, "Added CATRow="+name);
-
 			}
 			else
 			{
 				Logger.log(LogEnum.WARNING,"No attrs for new CATRow="+name);
 			}
-
-
 		});
 		return list;
 	}
