@@ -117,7 +117,9 @@ public class CATInputCSV extends CSVConfig
 			sb.append(values.toString()+"\n");
 		});
 
-		parser.flushFileHandlerWriter(parser.getFile().getName().trim()+".txt", sb.toString());
+		String name = parser.getFile().getName().trim();
+		name=name.substring(0, name.indexOf(".csv"));
+		parser.flushFileHandlerWriter("output/"+name, "txt", sb.toString());
 	}
 
 	public void exec()

@@ -180,6 +180,9 @@ public class AppController implements Initializable
 		}
 		else
 		{
+			CalcValueChart.PLACE_PRIORITY = 2;
+			EnumChart.PLACE_PRIORITY = 1;
+			RawValueChart.PLACE_PRIORITY = 0;
 			csv = new CATInputCSV(csvPath, CATInputCSV.HEADER);
 		}
 		

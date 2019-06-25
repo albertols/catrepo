@@ -1,9 +1,11 @@
 package application;
 	
 import java.io.File;
+import java.io.IOException;
 
 import com.log.LogEnum;
 import com.log.Logger;
+import com.parser.utils.StringUtils;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -56,7 +58,16 @@ public class App extends Application
 			@Override
 			public void handle(WindowEvent e)
 			{
-				Logger.log(LogEnum.INFO,"Closing " + getClass().getSimpleName());
+				Logger.log(LogEnum.INFO,"Closing " + getClass().getSimpleName()+ " and appending log");
+				try
+				{
+					Logger.appendFileForLogList("output/CATLogViewer_"+StringUtils.currentTimeString()+".log");
+				}
+				catch (IOException e1)
+				{
+					Logger.log(LogEnum.ERROR,"Closing " + getClass().getSimpleName());
+					e1.printStackTrace();
+				}
 				Platform.exit();
 				System.exit(0);
 			}

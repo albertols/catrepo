@@ -203,10 +203,11 @@ public class FileHandler
 	 * @param String filePath
 	 * @param String content
 	 */
-	public void flushFileHandlerWriter(String filePath, String content)// throws IOException
+	public void flushFileHandlerWriter(String filePath, String extension, String content)// throws IOException
 	{
 		FileHandler fh=new FileHandler(filePath);
 		fh.modifiesNameWithTimeStamp();
+		fh.modifiesNameWithExtension(extension);
 		fh.initWriter();
 		try
 		{
@@ -221,6 +222,16 @@ public class FileHandler
 		
 	}
 	
+	/**
+	 * Modifies File name by including the time stamp string
+	 */
+	private void modifiesNameWithExtension(String ext)
+	{
+		setFilePath(getFilePath()+"."+ext);
+		file.renameTo(new File(getFilePath()));
+	
+	}
+
 	/**
 	 * 
 	 * Flushes a new filePath with certain content
