@@ -16,7 +16,7 @@
 
 <!--styleClass="desktop"-->
 
-<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AppController">
    <content>
       <TabPane prefHeight="1750.0" prefWidth="1488.0" styleClass="desktop" tabClosingPolicy="UNAVAILABLE">
         <tabs>

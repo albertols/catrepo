@@ -17,9 +17,9 @@ import com.parser.utils.StringUtils;
 import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.CATInputCSV;
 
-import application.plot.CalcValueChart;
-import application.plot.EnumChart;
-import application.plot.RawValueChart;
+import application.chart.CalcValueChart;
+import application.chart.EnumChart;
+import application.chart.RawValueChart;
 
 /**
  * Parser for an input .csv exported with PTU format (from .xlsx).

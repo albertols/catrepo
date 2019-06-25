@@ -1,4 +1,4 @@
-package application.plot;
+package application.chart;
 
 import java.util.Calendar;
 import java.util.Comparator;
@@ -47,7 +47,7 @@ public abstract class AbstractChart implements Comparable<AbstractChart>
 		setEndSimTime(end);
 	}
 
-	public abstract Series getSeries (String varName, List<AttrAndValue> attrsMapEntry);
+	public abstract Series getSeries (String varName, List<AttrAndValue> attrsMapEntry, double yCor);
 	
 	public String getName() {
 		return name;

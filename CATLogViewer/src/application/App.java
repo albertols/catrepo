@@ -15,7 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 
-public class Main extends Application
+public class App extends Application
 {
 	public static String s_os = File.separator;
 	public Parent root;

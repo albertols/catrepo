@@ -32,20 +32,20 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
  * @author alopez
  *
  */
-public class DirectoryWatcher extends Task<MainController>
+public class DirectoryWatcher extends Task<AppController>
 {
 	private final static long TIMER = 500;
-	private File rootFolder = new File(MainController.INPUT_CSV_PATH);
+	private File rootFolder = new File(AppController.INPUT_CSV_PATH);
 	private WatchService watcher;
 	private ExecutorService executor;
-	private MainController controller;
+	private AppController controller;
 
-	public DirectoryWatcher(MainController mainController)
+	public DirectoryWatcher(AppController mainController)
 	{
 		this.controller = mainController;
 	}
 
-	public MainController call() throws Exception
+	public AppController call() throws Exception
 	{
 		watcher = FileSystems.getDefault().newWatchService();
 		executor = Executors.newSingleThreadExecutor();

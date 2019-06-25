@@ -19,9 +19,9 @@ import com.log.Logger;
 import com.parser.utils.StringUtils;
 import com.parser.utils.csv.CSVConfig;
 
-import application.plot.CalcValueChart;
-import application.plot.EnumChart;
-import application.plot.RawValueChart;
+import application.chart.CalcValueChart;
+import application.chart.EnumChart;
+import application.chart.RawValueChart;
 
 /**
  * Parser for an input .csv exported with CAT format (from .log).

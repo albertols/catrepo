@@ -1,4 +1,4 @@
-package application.plot;
+package application.chart;
 
 import java.util.Calendar;
 

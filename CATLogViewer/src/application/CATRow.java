@@ -3,16 +3,15 @@ package application;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.log.LogEnum;
-import com.log.Logger;
 import com.parser.utils.csv.AttrAndValue;
 import com.parser.utils.csv.AttrsAndValue;
 
-import application.plot.AbstractChart;
-import application.plot.ChartFactory;
-import application.plot.EnumChart;
+import application.chart.AbstractChart;
+import application.chart.ChartFactory;
+import application.chart.EnumChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 
 public class CATRow
 {
@@ -21,15 +20,16 @@ public class CATRow
 	private String varName;
 	private CheckBox checkBox;
 	private ComboBox<String> comboBox;
+	private TextField yCor;
 	private boolean isPloted=true;
 	
-	public CATRow(AttrsAndValue attrsAndValue)
-	{
-		this.attrsAndValue = attrsAndValue;
-		this.pos = attrsAndValue.posName;
-		this.varName = attrsAndValue.varName;
-		
-	}
+//	public CATRow(AttrsAndValue attrsAndValue)
+//	{
+//		this.attrsAndValue = attrsAndValue;
+//		this.pos = attrsAndValue.posName;
+//		this.varName = attrsAndValue.varName;
+//		
+//	}
 	
 	public CATRow(AttrsAndValue attrsAndValue, CheckBox checkBox, ComboBox<String> cb)
 	{
@@ -38,6 +38,12 @@ public class CATRow
 		this.varName = attrsAndValue.varName;
 		this.checkBox = checkBox;
 		this.comboBox = cb;
+		this.yCor =  new TextField();
+		this.yCor.setDisable(false);
+		this.yCor.setVisible(true);
+		this.yCor.setEditable(true);
+		this.yCor.setId("scale-text-field-y");
+		//this.yCor.setStyle("@res/style.css/scale-text-field-0");
 		initCheckBox ();
 	}
 
@@ -146,12 +152,16 @@ public class CATRow
 	public void setPloted(boolean isPloted) {
 		this.isPloted = isPloted;
 	}
+
+	public TextField getYCor() {
+		return yCor;
+	}
+
+	public void setYCor(TextField yCor) {
+		this.yCor = yCor;
+	}
 	
 	
-	
-	
-	
-	
-	
+
 
 }

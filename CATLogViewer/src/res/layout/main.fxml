@@ -17,17 +17,17 @@
 
 <!--styleClass="desktop"-->
 
-<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<ScrollPane prefHeight="950.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.AppController">
    <content>
-      <TabPane prefHeight="1750.0" prefWidth="1488.0" styleClass="desktop" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="1750.0" prefWidth="2000.0" styleClass="desktop" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab styleClass="transparent" text="Main">
                <content>
-                  <SplitPane dividerPositions="0.2782258064516129" prefHeight="160.0" prefWidth="200.0" styleClass="transparent">
+                  <SplitPane dividerPositions="0.211" prefHeight="160.0" prefWidth="200.0" styleClass="transparent">
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="884.0" prefWidth="431.0" styleClass="transparent">
                            <children>
-                              <TreeTableView fx:id="varTree" layoutX="21.0" layoutY="111.0" prefHeight="767.0" prefWidth="371.0">
+                              <TreeTableView fx:id="varTree" layoutX="15.0" layoutY="111.0" prefHeight="767.0" prefWidth="385.0">
                                 
                               </TreeTableView>
                               <TextArea fx:id="log_TextArea" layoutX="20.0" layoutY="893.0" prefHeight="184.0" prefWidth="373.0" />
@@ -49,7 +49,7 @@
                               <Label layoutX="20.0" layoutY="18.0" prefHeight="17.0" prefWidth="44.0" styleClass="bold-label" text="Input" />
                            </children>
                         </AnchorPane>
-                      <AnchorPane fx:id="bigChartPane" minHeight="0.0" minWidth="0.0" prefHeight="884.0" prefWidth="959.0">
+                      <AnchorPane fx:id="bigChartPane" minHeight="0.0" minWidth="0.0" prefHeight="1721.0" prefWidth="1162.0">
                            <children>
                               <Slider fx:id="startSlider" layoutX="69.0" layoutY="25.0" prefHeight="14.0" prefWidth="540.0" />
                               <TextField fx:id="startTextField" layoutX="619.0" layoutY="21.0" prefHeight="25.0" prefWidth="169.0" styleClass="mid1-textField" text="null" />

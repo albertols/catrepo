@@ -1,4 +1,4 @@
-package application.plot;
+package application.chart;
 
 import java.util.Calendar;
 import java.util.List;
@@ -17,6 +17,7 @@ import javafx.scene.layout.RowConstraints;
 public class EnumChart extends AbstractChart
 {
 	public final static String NAME = "Enum/Bitmap";
+	public static int PLACE_PRIORITY = 1;
 	
 	public EnumChart(Calendar start, Calendar end)
 	{
@@ -26,7 +27,7 @@ public class EnumChart extends AbstractChart
 	public EnumChart(String name)
 	{
 		super (name);
-		setProirity(1);
+		setProirity(PLACE_PRIORITY);
 		setPriorityToPlot(3);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
@@ -50,7 +51,7 @@ public class EnumChart extends AbstractChart
 		getRowc().setVgrow(Priority.ALWAYS);
 		//chartsGrid.getRowConstraints().add(x, row1);
 		
-		setColc(new ColumnConstraints(1041.0));
+		setColc(new ColumnConstraints(1341.0));
 		getColc().setHgrow(Priority.ALWAYS);
 	}
 	
@@ -61,7 +62,7 @@ public class EnumChart extends AbstractChart
 	}
 
 	@Override
-	public Series getSeries(String varName, List<AttrAndValue> attrsMapEntry)
+	public Series getSeries(String varName, List<AttrAndValue> attrsMapEntry, double yCor)
 	{
 		int x=0;
 		Series<Number, String> enumSeries = new XYChart.Series<Number, String>();

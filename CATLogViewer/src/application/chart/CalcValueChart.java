@@ -1,4 +1,4 @@
-package application.plot;
+package application.chart;
 
 import java.util.Calendar;
 import java.util.List;
@@ -18,6 +18,7 @@ import javafx.scene.layout.RowConstraints;
 public class CalcValueChart extends AbstractChart
 {
 	public final static String NAME = "Calc Value";
+	public static int PLACE_PRIORITY = 2;
 	
 	public CalcValueChart(Calendar start, Calendar end)
 	{
@@ -27,7 +28,7 @@ public class CalcValueChart extends AbstractChart
 	public CalcValueChart(String name)
 	{
 		super (name);
-		setProirity(2);
+		setProirity(PLACE_PRIORITY);
 		setPriorityToPlot(2);
 		NumberAxis bigxAxis = new NumberAxis();
 		bigxAxis.setLabel("Timestamp");
@@ -47,13 +48,13 @@ public class CalcValueChart extends AbstractChart
 		getRowc().setVgrow(Priority.ALWAYS);
 		//chartsGrid.getRowConstraints().add(x, row1);
 		
-		setColc(new ColumnConstraints(1041.0));
+		setColc(new ColumnConstraints(1341.0));
 		getColc().setHgrow(Priority.ALWAYS);
 		
 	}
 
 	@Override
-	public Series getSeries(String varName, List<AttrAndValue> attrsMapEntry)
+	public Series getSeries(String varName, List<AttrAndValue> attrsMapEntry, double yCor)
 	{
 		int x=0;
 		Series<Number, Number> rawSeries = new XYChart.Series<Number, Number>();
@@ -64,23 +65,20 @@ public class CalcValueChart extends AbstractChart
 			{
 				try
 				{
-					Double i = Double.valueOf(attr.v);
+					Double y = Double.valueOf(attr.v);
 					if (isAttrInDateRange(attr))
 					{
-						if (("Tractive Effort Request").equals(varName))
-						{
-							i=i/2000;
-						}
+						y=y/yCor;
 						//Logger.log(LogEnum.DEBUG,"\tdouble "+i);
-						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, i));
+						rawSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
 						x++;
 					}
 				}
 				catch (Exception e)
 				{
-					Logger.log(LogEnum.ERROR,"Parsing into double "+attr.v);
+					Logger.log(LogEnum.ERROR,"Parsing into double "+this.getClass().getSimpleName()+" "+attr.v);
 				}
-				
+
 			}
 		}
 		return rawSeries;

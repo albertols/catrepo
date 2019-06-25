@@ -35,8 +35,8 @@
 
 
 .chart-legend {
-	-fx-background-color: lightgray;
-   /*-fx-background-color:  transparent;*/
+	/*-fx-background-color: lightgray;*/
+   -fx-background-color:  transparent;
    -fx-padding: 20px;
 }
 

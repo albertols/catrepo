@@ -20,8 +20,12 @@ import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.CATInputCSV;
 import com.parser.utils.csv.CSVConfig;
 import com.parser.utils.csv.ptu.PTUInputCSV;
-import application.plot.AbstractChart;
-import application.plot.ChartFactory;
+
+import application.chart.AbstractChart;
+import application.chart.CalcValueChart;
+import application.chart.ChartFactory;
+import application.chart.EnumChart;
+import application.chart.RawValueChart;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,9 +48,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.GridPane;
 
-public class MainController implements Initializable
+public class AppController implements Initializable
 {
-	public static final String INPUT_CSV_PATH = "input"+Main.s_os;
+	public static final String INPUT_CSV_PATH = "input"+App.s_os;
 
 	@FXML
 	public ComboBox<String> inputComboBox;
@@ -122,6 +126,24 @@ public class MainController implements Initializable
 		initTreeItemView ();
 	}
 
+	private boolean simTimeChecker ()
+	{
+		int start = (int)startSlider.getValue();
+		int end = (int)endSlider.getValue();
+		updateSimTime (csv.calMap.get(start), csv.calMap.get(end));
+		if (start<end)
+		{
+			//log_TextArea.appendText("Sim Time OK:"+start+"<"+end);
+			return true;
+		}
+		else if (start==0)
+		{
+			log_TextArea.appendText("WRONG Sim Time :"+start+"<"+end+"\n");
+			Logger.log(LogEnum.WARNING,"WRONG Sim Time :"+start+"<"+end);
+		}
+		return false;
+	}
+
 	private void initInputComboBox()
 	{
 		List<File> l = CSVConfig.getRecursiveCSVFiles(INPUT_CSV_PATH, null);
@@ -143,27 +165,6 @@ public class MainController implements Initializable
 		
 	}
 	
-	
-
-	private boolean simTimeChecker ()
-	{
-		int start = (int)startSlider.getValue();
-		int end = (int)endSlider.getValue();
-		updateSimTime (csv.calMap.get(start), csv.calMap.get(end));
-		if (start<end)
-		{
-			//log_TextArea.appendText("Sim Time OK:"+start+"<"+end);
-			return true;
-		}
-		else if (start==0)
-		{
-			log_TextArea.appendText("WRONG Sim Time :"+start+"<"+end+"\n");
-			Logger.log(LogEnum.WARNING,"WRONG Sim Time :"+start+"<"+end);
-		}
-		return false;
-	}
-
-	
 	private void initCSV(String csvPath)
 	{
 		// gets .csv
@@ -173,6 +174,9 @@ public class MainController implements Initializable
 		if ((csvPath).contains("PTU"))
 		{
 			csv = new PTUInputCSV(csvPath, CATInputCSV.HEADER);
+			CalcValueChart.PLACE_PRIORITY = 0;
+			EnumChart.PLACE_PRIORITY = 1;
+			RawValueChart.PLACE_PRIORITY = 2;
 		}
 		else
 		{
@@ -360,7 +364,7 @@ public class MainController implements Initializable
 		// column for pos
 		TreeTableColumn<CATRow, Integer> posCol =  new TreeTableColumn<CATRow, Integer>("Pos"+simCount);
 		posCol.setEditable(false);
-		posCol.setPrefWidth(58.0);
+		//posCol.setPrefWidth(55.0);
 		posCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("pos"));
 
 		// column for variable
@@ -369,17 +373,22 @@ public class MainController implements Initializable
 
 		// column for valType
 		TreeTableColumn<CATRow, Map<Integer, String>> valTypeCol =  new TreeTableColumn<>("ValueType"+simCount);
+		valTypeCol.setPrefWidth(85);
 		valTypeCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("comboBox"));
+		
+		// column for YAxis correction
+		TreeTableColumn<CATRow, TextField> yCorCol =  new TreeTableColumn<CATRow, TextField>("yCor"+simCount);
+		yCorCol.setCellValueFactory(new TreeItemPropertyValueFactory<CATRow, TextField>("yCor"));
 
 		// column for variable
 		TreeTableColumn<CATRow, CheckBox> colCheckBox =  new TreeTableColumn<CATRow, CheckBox>("Plot"+simCount);
-		colCheckBox.setPrefWidth(58);
 		colCheckBox.setCellValueFactory(new TreeItemPropertyValueFactory<CATRow, CheckBox>("checkBox"));
 
 		// adds columns and root
 		varTree.getColumns().add(colCheckBox);
-		varTree.getColumns().add(varsCol);
 		varTree.getColumns().add(valTypeCol);
+		varTree.getColumns().add(varsCol);
+		varTree.getColumns().add(yCorCol);
 		varTree.getColumns().add(posCol);
 		varTree.setRoot(varsRoot);
 		simCount++;
@@ -436,7 +445,7 @@ public class MainController implements Initializable
 	{	
 		// attrs, name and type
 		AttrsAndValue attrs = row.getAttrsAndValue();
-		String name = attrs.getVarName();	
+		String varName = attrs.getVarName();	
 		String type = row.getComboBox().getValue();
 
 		// filter by type
@@ -447,11 +456,32 @@ public class MainController implements Initializable
 				.map(Map.Entry::getValue)
 				.findFirst()
 				.orElse(null);
+		
+		double yCor = worksoutCorrection ("x",row);
 
 		// getSeries through factory
-		Series serie = new ChartFactory().makeSeries(type, startSimTime, endSimTime).getSeries(name, attrsMapEntry);
+		Series serie = new ChartFactory().makeSeries(type, startSimTime, endSimTime).getSeries(varName, attrsMapEntry, yCor);
 		chartMap.get(type).getData().add(serie);
 		chartMap.get(type).autosize();
+	}
+
+	private double worksoutCorrection(String axis, CATRow row)
+	{
+		axis =axis.toLowerCase();
+		String textVal = row.getYCor().getText();
+		if (textVal.length()>0)
+		{
+			try
+			{
+				Double i = Double.valueOf(textVal);
+				return i;
+			}
+			catch (Exception e)
+			{
+				Logger.log(LogEnum.WARNING,"Unable to convert YAxis correction="+textVal+"for "+row.getVarName());
+			}
+		}
+		return 1;
 	}
 
 	private void clearBoxes()
