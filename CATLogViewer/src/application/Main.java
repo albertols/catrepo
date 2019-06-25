@@ -1,16 +1,26 @@
 package application;
 	
+import java.io.File;
+
+import com.log.LogEnum;
+import com.log.Logger;
+
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 
 public class Main extends Application
 {
+	public static String s_os = File.separator;
 	public Parent root;
 	public Scene scene;
+	
 	
 	@Override
 	public void start(Stage primaryStage)
@@ -39,6 +49,18 @@ public class Main extends Application
 		{
 			e.printStackTrace();
 		}
+		
+		// closes all the Threads
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			
+			@Override
+			public void handle(WindowEvent e)
+			{
+				Logger.log(LogEnum.INFO,"Closing " + getClass().getSimpleName());
+				Platform.exit();
+				System.exit(0);
+			}
+		});
 	}
 	
 	public static void main(String[] args) {

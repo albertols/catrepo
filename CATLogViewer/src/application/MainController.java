@@ -20,7 +20,6 @@ import com.parser.utils.csv.AttrsAndValue;
 import com.parser.utils.csv.CATInputCSV;
 import com.parser.utils.csv.CSVConfig;
 import com.parser.utils.csv.ptu.PTUInputCSV;
-
 import application.plot.AbstractChart;
 import application.plot.ChartFactory;
 import javafx.beans.value.ChangeListener;
@@ -47,6 +46,8 @@ import javafx.scene.layout.GridPane;
 
 public class MainController implements Initializable
 {
+	public static final String INPUT_CSV_PATH = "input"+Main.s_os;
+
 	@FXML
 	public ComboBox<String> inputComboBox;
 
@@ -107,6 +108,7 @@ public class MainController implements Initializable
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
 		Logger._verboseLogs_DEBUG();
+		Logger.log(LogEnum.INFO,"Luanched "+this.getClass().getSimpleName());
 		initInputComboBox ();
 	}
 
@@ -122,15 +124,26 @@ public class MainController implements Initializable
 
 	private void initInputComboBox()
 	{
-		List<File> l = CSVConfig.getRecursiveCSVFiles("input/", null);
+		List<File> l = CSVConfig.getRecursiveCSVFiles(INPUT_CSV_PATH, null);
 		if (null!=l)
 		{
 			List<String> csvNames = l.stream()
 					.map(f->f.getPath())
 					.collect(Collectors.toList());
+			csvNames.forEach((f)->{
+				Logger.log(LogEnum.INFO,".csv ---> "+f);
+			});
 			inputComboBox.setItems(FXCollections.observableArrayList(csvNames));
 		}
+		
+		DirectoryWatcher dm =  new DirectoryWatcher(this);
+		Thread th = new Thread(dm);
+		th.setDaemon(true);
+		th.start();
+		
 	}
+	
+	
 
 	private boolean simTimeChecker ()
 	{
@@ -369,6 +382,7 @@ public class MainController implements Initializable
 		varTree.getColumns().add(valTypeCol);
 		varTree.getColumns().add(posCol);
 		varTree.setRoot(varsRoot);
+		simCount++;
 	}
 
 	private void updateSimTime (Calendar start, Calendar end)

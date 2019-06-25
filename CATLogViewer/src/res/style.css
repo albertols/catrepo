@@ -67,7 +67,8 @@
 
 .mid1-textField {
   /*-fx-font-weight: bold;*/
-  -fx-font-size: 14;
+  -fx-font-size: 13;
+  -fx-alignment: center;
 }
 
 .mid0-bold-textField {
