@@ -34,19 +34,16 @@ public class PTUInputCSV extends CATInputCSV
 	public final static String CSV_PTU_PATH_1 = "input/csv/PTU/S0X_STOPPING_NOMINAL_T1.PLD(2).csv";
 	public final static String CSV_PTU_PATH_2 = "input/csv/PTU/2.csv";
 	public final static String CSV_PTU_PATH_3 = "input/csv/PTU/scr_uucm_vato_023_T1_PM_Speed.xls.csv";
-	public String CAT_DATE_STRING_FORMAT_JDK8 = "dd-MM-uuuu HH:mm:ss:SSSS";
-	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd-MM-yyyy HH:mm:ss:SSSS";
 
 	// static
-//	public String CAT_DATE_STRING_FORMAT_JDK8 = "dd LLL uuuu HH:mm:ss:SSSS";
-//	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd MMMM yyyy HH:mm:ss:SSSS";
+	//public String CAT_DATE_STRING_FORMAT_JDK7 = "dd MMM yyyy HH:mm:ss:SSSS";
+	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd-MM-yyyy HH:mm:ss:SSSS";
 	public String DELIMITER = ";";
 
 	public PTUInputCSV(String filePath, String headerFormat)
 	{
 		super(filePath, headerFormat);
 		setCAT_DATE_STRING_FORMAT_JDK7(CAT_DATE_STRING_FORMAT_JDK7);
-		setCAT_DATE_STRING_FORMAT_JDK8(CAT_DATE_STRING_FORMAT_JDK8);
 		setDELIMITER(DELIMITER);
 	}
 	
@@ -234,7 +231,7 @@ public class PTUInputCSV extends CATInputCSV
 			if (varName.length()!=0)
 			{
 				// adds attr
-				AttrsAndValue newAttr = new AttrsAndValue(x, varName, getCAT_DATE_STRING_FORMAT_JDK7(), getCAT_DATE_STRING_FORMAT_JDK8());
+				AttrsAndValue newAttr = new AttrsAndValue(x, varName, getCAT_DATE_STRING_FORMAT_JDK7());
 				this.measNameMap.put(x, varName);
 
 				newAttr.addFoTypeAndPos(typeMap.get(RawValueChart.NAME), RawValueChart.NAME);

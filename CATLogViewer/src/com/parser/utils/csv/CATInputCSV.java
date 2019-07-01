@@ -47,7 +47,6 @@ public class CATInputCSV extends CSVConfig
 	public final static String CSV_PATH_12 = "input/csv/14Jun/VATP_32257_CatRecNP_20190614_105425.log.csv";
 	
 	// static
-	public String CAT_DATE_STRING_FORMAT_JDK8 = "dd/MM/uuuu HH:mm:ss";
 	public String CAT_DATE_STRING_FORMAT_JDK7 = "dd/MM/yyyy HH:mm:ss";
 	public String DELIMITER = ", ";
 	
@@ -73,7 +72,6 @@ public class CATInputCSV extends CSVConfig
 	{
 		super(filePath, headerFormat);
 		setCAT_DATE_STRING_FORMAT_JDK7(CAT_DATE_STRING_FORMAT_JDK7);
-		setCAT_DATE_STRING_FORMAT_JDK8(CAT_DATE_STRING_FORMAT_JDK8);
 		setDELIMITER(DELIMITER);
 	}
 
@@ -356,7 +354,7 @@ public class CATInputCSV extends CSVConfig
 			if (varName.length()!=0)
 			{
 				// adds attr
-				AttrsAndValue newAttr = new AttrsAndValue(x, varName, getCAT_DATE_STRING_FORMAT_JDK7(), getCAT_DATE_STRING_FORMAT_JDK8());
+				AttrsAndValue newAttr = new AttrsAndValue(x, varName, getCAT_DATE_STRING_FORMAT_JDK7());
 				this.measNameMap.put(x, varName);
 
 				int blanksAhead= blanksAhead (x+1, vars1);
@@ -388,14 +386,7 @@ public class CATInputCSV extends CSVConfig
 
 	}
 
-	public String getCAT_DATE_STRING_FORMAT_JDK8() {
-		return CAT_DATE_STRING_FORMAT_JDK8;
-	}
-
-	public void setCAT_DATE_STRING_FORMAT_JDK8(String cAT_DATE_STRING_FORMAT_JDK8) {
-		CAT_DATE_STRING_FORMAT_JDK8 = cAT_DATE_STRING_FORMAT_JDK8;
-	}
-
+	
 	public String getCAT_DATE_STRING_FORMAT_JDK7() {
 		return CAT_DATE_STRING_FORMAT_JDK7;
 	}

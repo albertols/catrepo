@@ -58,7 +58,7 @@ public class App extends Application
 			@Override
 			public void handle(WindowEvent e)
 			{
-				Logger.log(LogEnum.INFO,"Closing " + getClass().getSimpleName()+ " and appending log");
+				Logger.log(LogEnum.INFO,"Closing " + this.getClass().getSimpleName()+ " and appending log");
 				try
 				{
 					Logger.appendFileForLogList("output/CATLogViewer_"+StringUtils.currentTimeString()+".log");
