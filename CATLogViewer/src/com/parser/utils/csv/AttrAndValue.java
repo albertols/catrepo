@@ -3,6 +3,10 @@ package com.parser.utils.csv;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import com.log.LogEnum;
 import com.log.Logger;
@@ -46,18 +50,19 @@ public class AttrAndValue implements Comparable<AttrAndValue>
 	{
 		try
 		{
-			this.cal = StringUtils.stringToCal(ts.trim(), InputCSV.CAT_DATE_STRING_FORMAT_JDK8);
-			this.calTs = StringUtils.calendarToString(cal, InputCSV.CAT_DATE_STRING_FORMAT_JDK7);
-			//Logger.log(LogEnum.DEBUG,"\tts "+ts+" vs. "+ calTs);
+			DateTime dt = DateTime.parse(ts.trim(), DateTimeFormat.forPattern(AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7).withLocale(Locale.US));
+			this.cal = dt.toGregorianCalendar();
+			this.calTs = dt.toString(AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7);
 		}
-		catch (ParseException e)
+		catch (Exception e)
 		{
 			Logger.log(LogEnum.ERROR,"WRONG Date conversion for "+ toString());
-			e.printStackTrace();
 		}
-		if (tsConversionChecker ()!=true)
+		
+		//if (tsConversionChecker ()!=true)
 		{
-			Logger.log(LogEnum.ERROR,"WRONG Date conversion for "+ toString());
+			//Logger.log(LogEnum.WARNING,"WRONG Date conversion Check for "+ calTs + " != "+ toString());
+			//System.exit(0);
 		}
 	}
 	

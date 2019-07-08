@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -13,17 +14,22 @@ import java.util.Map;
  */
 public class AttrsAndValue
 {
+	public static String CAT_DATE_STRING_FORMAT_JDK7 = null;
 	public int posName;
 	public String varName;
-	public Map<Integer, String> typeAndPos = new HashMap<Integer, String>();
+	public Map<Integer, String> typeAndPos = new TreeMap<Integer, String>();
 	public ArrayList<String> typeList = new ArrayList<>();
-	public List<AttrAndValue> attrs = new ArrayList<AttrAndValue>();
+	
+	/**
+	 * Stores @AttrAndValue in a List. It is accessed by key type.
+	 */
 	public Map<String, List<AttrAndValue>> attrsMap = new HashMap<String, List<AttrAndValue>>();
 	
-	public AttrsAndValue(int pos, String varName)
+	public AttrsAndValue(int pos, String varName, String format7)
 	{
 		this.posName = pos;
 		setVarName(varName);
+		AttrsAndValue.CAT_DATE_STRING_FORMAT_JDK7 = format7;
 	}
 	
 	@Override
@@ -32,16 +38,22 @@ public class AttrsAndValue
 		StringBuilder sb = new StringBuilder ();
 		sb.append(posName);
 		int x=0;
-		for (AttrAndValue a:attrs)
-		{
-			if (x==3)
-			{
-				x=0;
-				sb.append("\n");
-			}
-			x++;
-			sb.append("\t"+a);
-		}
+//		for (AttrAndValue a:attrs)
+//		{
+//			if (x==3)
+//			{
+//				x=0;
+//				sb.append("\n");
+//			}
+//			x++;
+//			sb.append("\t"+a);
+//		}
+		
+		attrsMap.forEach((type, attrList)->{
+			attrList.forEach((attr)->{
+				sb.append("\t"+attr+"\n");
+			});
+		});
 		
 		sb.append("\n");
 		
@@ -62,13 +74,7 @@ public class AttrsAndValue
 		String type = typeAndPos.get(typePos);
 		AttrAndValue a = new AttrAndValue(ts, type, v);
 		attrsMap.get(type).add(a);
-		addAtrr (a);
 		//System.out.println("\t"+a);
-	}
-	
-	public void addAtrr (AttrAndValue a)
-	{
-		attrs.add(a);
 	}
 	
 	public String showTypeAndPos ()
@@ -97,7 +103,7 @@ public class AttrsAndValue
 	public void setPos(int pos) {
 		this.posName = pos;
 	}
-
+	
 	public Map<Integer, String> getTypeAndPos() {
 		return typeAndPos;
 	}
